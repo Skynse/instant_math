@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Step-by-Step Solution | Academic Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#aec9ea",
+                        "surface-container-high": "#e7e8e9",
+                        "outline": "#73777e",
+                        "secondary-fixed-dim": "#44ddc1",
+                        "on-surface-variant": "#43474d",
+                        "on-surface": "#191c1d",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#d9e2ff",
+                        "on-tertiary-fixed": "#001945",
+                        "on-secondary-fixed": "#00201a",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-fixed": "#68fadd",
+                        "surface": "#f8f9fa",
+                        "on-secondary-fixed-variant": "#005145",
+                        "secondary-container": "#68fadd",
+                        "tertiary-fixed-dim": "#b0c6ff",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-fixed-variant": "#00429b",
+                        "primary-container": "#0d2b45",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d0e4ff",
+                        "secondary": "#006b5c",
+                        "inverse-primary": "#aec9ea",
+                        "on-background": "#191c1d",
+                        "surface-container-low": "#f3f4f5",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-fixed": "#001d35",
+                        "primary": "#00162a",
+                        "on-tertiary-container": "#548cff",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d9dadb",
+                        "tertiary": "#001337",
+                        "on-secondary-container": "#007261",
+                        "surface-bright": "#f8f9fa",
+                        "surface-tint": "#46607d",
+                        "background": "#f8f9fa",
+                        "outline-variant": "#c3c6ce",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#7893b2",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#2e4964",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#002660",
+                        "surface-variant": "#e1e3e4",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-error": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .step-line::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            bottom: -20px;
+            width: 2px;
+            background-color: #e1e3e4;
+        }
+        .last-step::before {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen pb-32">
+<header class="bg-surface/70 backdrop-blur-xl docked full-width top-0 sticky z-50 no-border bg-surface_container_low flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-highest transition-colors p-2 rounded-full">arrow_back</button>
+<h1 class="font-headline font-extrabold italic text-primary text-lg tracking-tight">Academic Atelier</h1>
+</div>
+<div class="flex items-center gap-3">
+<span class="hidden md:block font-manrope font-bold text-lg tracking-tight text-primary">Solution View</span>
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container border-2 border-surface-container-high overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close up profile picture of a student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-mlVTG0_GPSfD7jZiiYSnn_ZOqRgGhKOwK3vv5dsln9M3EI82C0eoy9vvhNAAyKmyVlrS5t9z3RqfKYI--t3rd7KD-1E_VPx-1G4t0OSiCNHZ-S8ziSA9mZBXJhDr3ImEXOvw0miCyD2RP17_QGcG6EAKDjRx77tCqK-sVTQ93_iP7HnCPZTaNfSz7m6Lfj2UEIZwlQxbSS5t7yAO6pIkKm-LT0OCwNjsEHvSvRFKk07CffE-X7GsaDb-o1KK7fcVAkLsGd3wnvTn"/>
+</div>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-6 py-12">
+<section class="mb-12">
+<span class="inline-block px-3 py-1 bg-tertiary-container text-on-tertiary-container text-xs font-bold rounded-full mb-4 tracking-wider uppercase">Current Problem</span>
+<div class="relative overflow-hidden bg-primary-container rounded-3xl p-8 md:p-12 shadow-sm">
+<div class="relative z-10">
+<h2 class="font-headline text-3xl md:text-4xl text-white font-bold mb-2">Solve for x:</h2>
+<div class="font-headline text-4xl md:text-5xl text-primary-fixed-dim font-extrabold tracking-tight">
+                        3(x - 5) + 4 = 2x + 8
+                    </div>
+</div>
+<div class="absolute top-0 right-0 w-64 h-64 bg-secondary opacity-10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+</div>
+</section>
+<section class="mb-16">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-3xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+<span class="text-on-surface-variant text-sm font-semibold mb-2 block uppercase tracking-widest">Final Result</span>
+<div class="text-5xl font-headline font-extrabold text-secondary mb-1">x = 19</div>
+<div class="flex items-center gap-2 text-on-secondary-container bg-secondary-container/30 px-3 py-1 rounded-lg w-fit">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-xs font-bold">Verified Logic</span>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<button class="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">bookmark</span>
+                            Save to History
+                        </button>
+<button class="w-full py-4 bg-secondary-container text-on-secondary-container font-headline font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">psychology</span>
+                            Explain More
+                        </button>
+</div>
+</div>
+<div class="md:col-span-8">
+<div class="bg-surface-container-low rounded-3xl p-8 md:p-10">
+<h3 class="font-headline text-2xl font-bold text-primary mb-8 border-b border-outline-variant/20 pb-4">Logical Breakdown</h3>
+<div class="space-y-10">
+<div class="relative flex gap-6 step-line">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold z-10 shadow-lg shadow-primary/20">1</div>
+<div>
+<h4 class="font-headline font-bold text-lg text-primary mb-2">Expand the expression</h4>
+<p class="text-on-surface-variant mb-3 leading-relaxed">Apply the distributive property to the left side: <span class="font-semibold text-primary">3 * x</span> and <span class="font-semibold text-primary">3 * (-5)</span>.</p>
+<div class="bg-surface-container-highest p-4 rounded-xl font-mono text-primary font-bold">
+                                        3x - 15 + 4 = 2x + 8
+                                    </div>
+</div>
+</div>
+<div class="relative flex gap-6 step-line">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold z-10 shadow-lg shadow-primary/20">2</div>
+<div>
+<h4 class="font-headline font-bold text-lg text-primary mb-2">Combine like terms</h4>
+<p class="text-on-surface-variant mb-3 leading-relaxed">On the left side, simplify <span class="font-semibold text-primary">-15 + 4</span> to get <span class="font-semibold text-primary">-11</span>.</p>
+<div class="bg-surface-container-highest p-4 rounded-xl font-mono text-primary font-bold">
+                                        3x - 11 = 2x + 8
+                                    </div>
+</div>
+</div>
+<div class="relative flex gap-6 step-line">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline font-bold z-10 shadow-lg shadow-primary/20">3</div>
+<div>
+<h4 class="font-headline font-bold text-lg text-primary mb-2">Isolate variable terms</h4>
+<p class="text-on-surface-variant mb-3 leading-relaxed">Subtract <span class="font-semibold text-primary">2x</span> from both sides to move all x-terms to the left.</p>
+<div class="bg-surface-container-highest p-4 rounded-xl font-mono text-primary font-bold">
+                                        (3x - 2x) - 11 = 8 <br/>
+                                        x - 11 = 8
+                                    </div>
+</div>
+</div>
+<div class="relative flex gap-6 last-step">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-headline font-bold z-10 shadow-lg shadow-secondary/20">4</div>
+<div>
+<h4 class="font-headline font-bold text-lg text-primary mb-2">Final Isolation</h4>
+<p class="text-on-surface-variant mb-3 leading-relaxed">Add <span class="font-semibold text-primary">11</span> to both sides to find the final value of x.</p>
+<div class="bg-secondary-container/20 p-4 rounded-xl font-mono text-on-secondary-container font-bold border border-secondary/20">
+                                        x = 8 + 11 <br/>
+                                        x = 19
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="mt-8">
+<div class="bg-tertiary-container rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6">
+<div class="p-4 bg-on-tertiary-container/10 rounded-2xl">
+<span class="material-symbols-outlined text-4xl text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div class="flex-1 text-center md:text-left">
+<h4 class="font-headline font-bold text-xl text-on-tertiary-fixed mb-1 uppercase tracking-tight">Key Formula Used</h4>
+<p class="text-on-tertiary-fixed-variant">The Distributive Property: a(b + c) = ab + ac. This was essential in Step 1 to eliminate parentheses.</p>
+</div>
+<button class="px-6 py-3 bg-tertiary text-on-tertiary font-bold rounded-xl hover:opacity-90 transition-all whitespace-nowrap">View Formula Sheet</button>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface/70 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)] no-border bg-surface_container_low">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-1.5" href="#">
+<span class="material-symbols-outlined" data-icon="history" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="functions">functions</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">Formulas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

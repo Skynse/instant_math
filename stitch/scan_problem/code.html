@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Academic Atelier - Scanner</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#aec9ea",
+              "surface-container-high": "#e7e8e9",
+              "outline": "#73777e",
+              "secondary-fixed-dim": "#44ddc1",
+              "on-surface-variant": "#43474d",
+              "on-surface": "#191c1d",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed": "#d9e2ff",
+              "on-tertiary-fixed": "#001945",
+              "on-secondary-fixed": "#00201a",
+              "surface-container-highest": "#e1e3e4",
+              "secondary-fixed": "#68fadd",
+              "surface": "#f8f9fa",
+              "on-secondary-fixed-variant": "#005145",
+              "secondary-container": "#68fadd",
+              "tertiary-fixed-dim": "#b0c6ff",
+              "on-primary": "#ffffff",
+              "surface-container": "#edeeef",
+              "on-tertiary-fixed-variant": "#00429b",
+              "primary-container": "#0d2b45",
+              "on-error-container": "#93000a",
+              "primary-fixed": "#d0e4ff",
+              "secondary": "#006b5c",
+              "inverse-primary": "#aec9ea",
+              "on-background": "#191c1d",
+              "surface-container-low": "#f3f4f5",
+              "inverse-surface": "#2e3132",
+              "on-primary-fixed": "#001d35",
+              "primary": "#00162a",
+              "on-tertiary-container": "#548cff",
+              "error-container": "#ffdad6",
+              "surface-dim": "#d9dadb",
+              "tertiary": "#001337",
+              "on-secondary-container": "#007261",
+              "surface-bright": "#f8f9fa",
+              "surface-tint": "#46607d",
+              "background": "#f8f9fa",
+              "outline-variant": "#c3c6ce",
+              "on-secondary": "#ffffff",
+              "on-primary-container": "#7893b2",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#2e4964",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#002660",
+              "surface-variant": "#e1e3e4",
+              "inverse-on-surface": "#f0f1f2",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .viewfinder-mask {
+        mask-image: radial-gradient(circle, transparent 70%, black 70.1%);
+      }
+      .scan-line {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #68fadd, transparent);
+        top: 20%;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface antialiased overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface/70 backdrop-blur-xl docked full-width top-0 sticky z-50 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-primary hover:bg-surface_container_highest transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-manrope font-extrabold italic text-primary text-lg tracking-tight">Academic Atelier</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface_container_highest transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="flash_on">flash_on</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-secondary-container">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Close up portrait of a young professional woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtG0uRqGwzd5Olhp-z8w6iG_kZe5xcm_DE3lsss6R97vef8ggKcxw1ZwLSHXAYlv9nolIw4lIMpkr72r2wncj1l1Wm830j4RJ7pl97QMH912S7Rc1J-fNjpETDQZm23Ql62Qs7R5ueR_qZoLM3lO042Fmm52ku-9ve-4mWO0uzQOZbAiS1MSsF33GV7Xs7CXTvoyLy0lDINnhA07vZf4rFCMQj_L19ZyNZjmcUmSYaM-Z14DTJukBEFoRrtWETRl84rn9Ucznqxhtt"/>
+</div>
+</div>
+</header>
+<!-- Main Content: Scanner Viewport -->
+<main class="flex-grow relative bg-slate-900 overflow-hidden">
+<!-- Live Camera Background (Simulated) -->
+<div class="absolute inset-0 z-0">
+<img alt="Math problems on paper" class="w-full h-full object-cover opacity-60" data-alt="A notebook with hand-written complex calculus equations" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuox6y6y8Fyx2n71M8MqkD1uuRrcd7gDnTeBoe-nEA5tA_5GxWmZ8f4joVTKpnthJrCt2FvQ0-yviN-ja6Cxzhfz1cHXqElB-PIjg2OvgSYvYmVRrC1N98elW7DYMAoiZdwGStowhbGBt37RBlNzsABYC4dwa6sTSx96br1TWhrbhcbdVpxgIXK83mgTqO_-8M7DjlU2dshClNr-CMVZymwkH37aPRt1RKzqbMFAqZZZgqJt4cynVCWHxqHaW0gqFcGs14KU7zhAZx"/>
+</div>
+<!-- Scanning Overlay -->
+<div class="absolute inset-0 z-10 flex flex-col items-center justify-center">
+<!-- Viewfinder Area -->
+<div class="relative w-[85%] max-w-lg aspect-[4/3] rounded-3xl overflow-hidden border-2 border-dashed border-secondary-fixed-dim/50 flex flex-col items-center justify-center">
+<!-- Corner Brackets -->
+<div class="absolute top-6 left-6 w-12 h-12 border-t-4 border-l-4 border-secondary-fixed rounded-tl-xl"></div>
+<div class="absolute top-6 right-6 w-12 h-12 border-t-4 border-r-4 border-secondary-fixed rounded-tr-xl"></div>
+<div class="absolute bottom-6 left-6 w-12 h-12 border-b-4 border-l-4 border-secondary-fixed rounded-bl-xl"></div>
+<div class="absolute bottom-6 right-6 w-12 h-12 border-b-4 border-r-4 border-secondary-fixed rounded-br-xl"></div>
+<!-- Active Focus Indicator -->
+<div class="bg-secondary-container/20 px-4 py-2 rounded-lg backdrop-blur-md">
+<p class="font-manrope text-secondary-fixed font-bold text-sm tracking-widest uppercase">Align Problem</p>
+</div>
+<!-- Animated-like Scanning Line (Static representation) -->
+<div class="absolute top-1/4 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary-fixed to-transparent opacity-80"></div>
+</div>
+<!-- Hint Text -->
+<p class="mt-8 text-surface text-sm font-medium tracking-wide bg-primary-container/60 px-6 py-2 rounded-full backdrop-blur-md">
+                Automatic formula detection active
+            </p>
+</div>
+<!-- Camera Controls -->
+<div class="absolute bottom-10 left-0 w-full z-20 px-8 flex items-center justify-between">
+<!-- Gallery Pick -->
+<button class="flex flex-col items-center gap-1 group">
+<div class="w-14 h-14 rounded-2xl bg-surface/10 backdrop-blur-xl flex items-center justify-center border border-white/10 group-hover:bg-surface/20 transition-all">
+<span class="material-symbols-outlined text-white" data-icon="photo_library">photo_library</span>
+</div>
+<span class="text-white text-[10px] font-bold tracking-widest uppercase">Gallery</span>
+</button>
+<!-- Main Shutter -->
+<button class="relative group">
+<div class="absolute inset-0 bg-secondary-fixed blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+<div class="relative w-24 h-24 rounded-full border-4 border-secondary-fixed flex items-center justify-center p-2 bg-slate-900/40 backdrop-blur-sm group-active:scale-95 transition-transform">
+<div class="w-full h-full rounded-full bg-secondary-fixed flex items-center justify-center shadow-lg shadow-secondary/40">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="photo_camera" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+</div>
+</div>
+</button>
+<!-- Mode Switch: Calculator -->
+<button class="flex flex-col items-center gap-1 group">
+<div class="w-14 h-14 rounded-2xl bg-surface/10 backdrop-blur-xl flex items-center justify-center border border-white/10 group-hover:bg-surface/20 transition-all">
+<span class="material-symbols-outlined text-white" data-icon="calculate">calculate</span>
+</div>
+<span class="text-white text-[10px] font-bold tracking-widest uppercase">Calc</span>
+</button>
+</div>
+</main>
+<!-- Formula Suggestion Bar (The "Focus Block" from Design System) -->
+<section class="bg-tertiary-container/90 backdrop-blur-md px-6 py-4 flex items-center gap-4 border-t border-white/5">
+<div class="w-10 h-10 rounded-xl bg-on-tertiary-container/20 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div class="flex-grow">
+<p class="text-[10px] font-bold text-on-primary-container uppercase tracking-tighter">Detected Pattern</p>
+<p class="text-on-tertiary-container font-manrope font-semibold text-sm">Quadratic Equation: ax² + bx + c = 0</p>
+</div>
+<button class="text-secondary-fixed text-sm font-bold bg-secondary/20 px-4 py-2 rounded-lg">View</button>
+</section>
+<!-- BottomNavBar -->
+<nav class="bg-surface/70 backdrop-blur-xl fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] rounded-t-3xl border-none">
+<!-- Scan (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary_container text-on_secondary_container rounded-xl px-4 py-1.5 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-primary" data-icon="photo_camera" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">Scan</span>
+</a>
+<!-- History -->
+<a class="flex flex-col items-center justify-center text-on_surface_variant px-4 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">History</span>
+</a>
+<!-- Formulas -->
+<a class="flex flex-col items-center justify-center text-on_surface_variant px-4 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="functions">functions</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">Formulas</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-on_surface_variant px-4 py-1.5 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider mt-1">Settings</span>
+</a>
+</nav>
+<!-- Spatial Spacer for Bottom Nav -->
+<div class="h-24 flex-shrink-0"></div>
+</body></html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=Crimson+Pro:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#edeeef",
+              "primary-fixed": "#d0e4ff",
+              "on-primary": "#ffffff",
+              "on-surface": "#191c1d",
+              "on-primary-fixed": "#001d35",
+              "surface-container-high": "#e7e8e9",
+              "on-secondary-fixed": "#00201a",
+              "tertiary-container": "#002660",
+              "surface-variant": "#e1e3e4",
+              "surface-container-highest": "#e1e3e4",
+              "secondary": "#006b5c",
+              "secondary-fixed": "#68fadd",
+              "on-primary-fixed-variant": "#2e4964",
+              "tertiary": "#001337",
+              "on-tertiary-fixed": "#001945",
+              "error-container": "#ffdad6",
+              "surface-tint": "#46607d",
+              "primary": "#00162a",
+              "outline": "#73777e",
+              "inverse-on-surface": "#f0f1f2",
+              "surface": "#f8f9fa",
+              "primary-fixed-dim": "#aec9ea",
+              "on-secondary": "#ffffff",
+              "background": "#f8f9fa",
+              "tertiary-fixed-dim": "#b0c6ff",
+              "tertiary-fixed": "#d9e2ff",
+              "surface-bright": "#f8f9fa",
+              "on-tertiary-container": "#548cff",
+              "error": "#ba1a1a",
+              "primary-container": "#0d2b45",
+              "surface-container-low": "#f3f4f5",
+              "outline-variant": "#c3c6ce",
+              "on-error-container": "#93000a",
+              "on-secondary-container": "#007261",
+              "on-tertiary": "#ffffff",
+              "on-surface-variant": "#43474d",
+              "on-secondary-fixed-variant": "#005145",
+              "on-background": "#191c1d",
+              "inverse-surface": "#2e3132",
+              "surface-dim": "#d9dadb",
+              "on-primary-container": "#7893b2",
+              "secondary-fixed-dim": "#44ddc1",
+              "secondary-container": "#68fadd",
+              "on-error": "#ffffff",
+              "inverse-primary": "#aec9ea",
+              "on-tertiary-fixed-variant": "#00429b"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"],
+              "math": ["Crimson Pro", "serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .math-text {
+            font-feature-settings: "lnum", "pnum";
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex items-center justify-between px-6 h-16 w-full max-w-screen-xl mx-auto">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#0D2B45] dark:text-slate-100" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-['Manrope'] font-bold text-lg tracking-tight text-[#0D2B45] dark:text-slate-100">Problem #1024</h1>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[#0D2B45] dark:text-slate-100" data-icon="share">share</span>
+<span class="font-['Manrope'] font-bold text-sm text-[#0D2B45] dark:text-slate-100">Share</span>
+</button>
+</div>
+<div class="bg-slate-100 dark:bg-slate-800 h-[1px] w-full"></div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-3xl mx-auto">
+<!-- Breadcrumb / Meta Information -->
+<div class="flex items-center gap-2 mb-6 text-on-surface-variant">
+<span class="text-xs font-semibold tracking-widest uppercase">Calculus II</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-xs font-semibold tracking-widest uppercase">Integration Techniques</span>
+</div>
+<!-- Problem Statement Card -->
+<section class="mb-10">
+<div class="bg-primary-container rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden group">
+<!-- Decorative background element -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-secondary/10 rounded-full blur-3xl group-hover:bg-secondary/20 transition-colors duration-700"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-8">
+<span class="bg-on-primary-container/10 text-on-primary-container text-[10px] font-bold px-3 py-1 rounded-full tracking-widest uppercase">Level: Advanced</span>
+<div class="flex items-center gap-2 bg-secondary/10 px-3 py-1.5 rounded-xl border border-secondary/20">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-secondary font-bold text-xs">Verified</span>
+</div>
+</div>
+<h2 class="text-on-primary font-headline font-extrabold text-2xl mb-8 leading-tight">Evaluate the following definite integral:</h2>
+<div class="math-text font-math italic text-4xl md:text-5xl text-center py-8 text-on-primary-container bg-black/10 rounded-2xl border border-white/5">
+<span class="text-secondary-fixed">∫</span><sub class="text-lg -ml-1">0</sub><sup class="text-lg -ml-2">π/2</sup>
+<span class="mx-2">sin</span><sup>5</sup>(x) <span class="mx-2">cos</span><sup>3</sup>(x) dx
+                    </div>
+</div>
+</div>
+</section>
+<!-- Solutions Header -->
+<div class="flex items-center justify-between mb-8 px-2">
+<div>
+<h3 class="font-headline font-bold text-xl text-primary">Step-by-Step Solution</h3>
+<p class="text-on-surface-variant text-sm mt-1">Guided derivation using u-substitution</p>
+</div>
+<button class="flex items-center gap-2 text-secondary font-bold text-sm hover:underline">
+<span class="material-symbols-outlined text-lg" data-icon="unfold_less">unfold_less</span>
+                Collapse Steps
+            </button>
+</div>
+<!-- Solution Steps (Editorial Style) -->
+<div class="space-y-6">
+<!-- Step 1 -->
+<div class="group flex gap-6">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-headline font-bold text-primary group-hover:bg-secondary group-hover:text-on-secondary transition-colors duration-300">1</div>
+<div class="w-0.5 h-full bg-surface-variant mt-2 rounded-full"></div>
+</div>
+<div class="flex-1 pb-8">
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/10">
+<h4 class="font-headline font-bold text-primary mb-3">Identity Application</h4>
+<p class="text-on-surface-variant mb-4 leading-relaxed">Rewrite the cosine term using the Pythagorean identity <span class="font-math italic">cos²(x) = 1 - sin²(x)</span> to prepare for substitution.</p>
+<div class="math-text font-math italic text-xl bg-surface-container-low p-4 rounded-xl inline-block w-full">
+                            = ∫ sin⁵(x) (1 - sin²(x)) cos(x) dx
+                        </div>
+</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="group flex gap-6">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-headline font-bold text-primary group-hover:bg-secondary group-hover:text-on-secondary transition-colors duration-300">2</div>
+<div class="w-0.5 h-full bg-surface-variant mt-2 rounded-full"></div>
+</div>
+<div class="flex-1 pb-8">
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/10">
+<h4 class="font-headline font-bold text-primary mb-3">Substitution Variable</h4>
+<p class="text-on-surface-variant mb-4 leading-relaxed">Let <span class="font-math italic">u = sin(x)</span>, then <span class="font-math italic">du = cos(x) dx</span>. Adjust the limits of integration.</p>
+<ul class="space-y-2 text-sm text-on-surface-variant font-medium">
+<li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-secondary"></span> When x = 0, u = 0</li>
+<li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-secondary"></span> When x = π/2, u = 1</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="group flex gap-6">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-headline font-bold text-primary group-hover:bg-secondary group-hover:text-on-secondary transition-colors duration-300">3</div>
+<div class="w-0.5 h-full bg-surface-variant mt-2 rounded-full"></div>
+</div>
+<div class="flex-1 pb-8">
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/10">
+<h4 class="font-headline font-bold text-primary mb-3">Integration</h4>
+<p class="text-on-surface-variant mb-4 leading-relaxed">Integrate the polynomial form with respect to u.</p>
+<div class="math-text font-math italic text-xl bg-surface-container-low p-4 rounded-xl inline-block w-full">
+                            ∫₀¹ (u⁵ - u⁷) du = [ u⁶/6 - u⁸/8 ]₀¹
+                        </div>
+</div>
+</div>
+</div>
+<!-- Result -->
+<div class="flex gap-6">
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-headline font-bold text-on-secondary shadow-lg shadow-secondary/20">
+<span class="material-symbols-outlined text-lg" data-icon="done_all">done_all</span>
+</div>
+</div>
+<div class="flex-1">
+<div class="bg-tertiary-container rounded-2xl p-6 border border-secondary/20">
+<h4 class="font-headline font-bold text-on-tertiary-container mb-2 uppercase tracking-widest text-[10px]">Final Answer</h4>
+<div class="flex items-baseline gap-4">
+<span class="math-text font-math italic text-3xl text-white">1/24</span>
+<span class="text-on-primary-container text-sm">≈ 0.04167</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Bottom Bar -->
+<div class="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-surface via-surface/90 to-transparent pointer-events-none">
+<div class="max-w-3xl mx-auto flex flex-col sm:flex-row gap-4 pointer-events-auto">
+<button class="flex-1 bg-gradient-to-r from-primary to-primary-container text-on-primary h-14 rounded-xl font-headline font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+                Verify Solution
+            </button>
+<div class="flex gap-4">
+<button class="w-14 h-14 bg-surface-container-lowest rounded-xl flex items-center justify-center text-primary border border-outline-variant/20 shadow-sm hover:bg-surface-container transition-colors active:scale-90">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+</button>
+<button class="w-14 h-14 bg-surface-container-lowest rounded-xl flex items-center justify-center text-primary border border-outline-variant/20 shadow-sm hover:bg-surface-container transition-colors active:scale-90">
+<span class="material-symbols-outlined" data-icon="picture_as_pdf">picture_as_pdf</span>
+</button>
+</div>
+</div>
+</div>
+<!-- BottomNavBar (Suppressed for focused detail view as per rules, but included if it were a top-level tab) -->
+<!-- Navigation would be hidden here because this is a sub-page/details screen with a Back action -->
+</body></html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#aec9ea",
+              "surface-container-high": "#e7e8e9",
+              "outline": "#73777e",
+              "secondary-fixed-dim": "#44ddc1",
+              "on-surface-variant": "#43474d",
+              "on-surface": "#191c1d",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed": "#d9e2ff",
+              "on-tertiary-fixed": "#001945",
+              "on-secondary-fixed": "#00201a",
+              "surface-container-highest": "#e1e3e4",
+              "secondary-fixed": "#68fadd",
+              "surface": "#f8f9fa",
+              "on-secondary-fixed-variant": "#005145",
+              "secondary-container": "#68fadd",
+              "tertiary-fixed-dim": "#b0c6ff",
+              "on-primary": "#ffffff",
+              "surface-container": "#edeeef",
+              "on-tertiary-fixed-variant": "#00429b",
+              "primary-container": "#0d2b45",
+              "on-error-container": "#93000a",
+              "primary-fixed": "#d0e4ff",
+              "secondary": "#006b5c",
+              "inverse-primary": "#aec9ea",
+              "on-background": "#191c1d",
+              "surface-container-low": "#f3f4f5",
+              "inverse-surface": "#2e3132",
+              "on-primary-fixed": "#001d35",
+              "primary": "#00162a",
+              "on-tertiary-container": "#548cff",
+              "error-container": "#ffdad6",
+              "surface-dim": "#d9dadb",
+              "tertiary": "#001337",
+              "on-secondary-container": "#007261",
+              "surface-bright": "#f8f9fa",
+              "surface-tint": "#46607d",
+              "background": "#f8f9fa",
+              "outline-variant": "#c3c6ce",
+              "on-secondary": "#ffffff",
+              "on-primary-container": "#7893b2",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#2e4964",
+              "on-tertiary": "#ffffff",
+              "tertiary-container": "#002660",
+              "surface-variant": "#e1e3e4",
+              "inverse-on-surface": "#f0f1f2",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+        }
+        .editorial-shadow {
+            box-shadow: 0 32px 64px -12px rgba(25, 28, 29, 0.06);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="bg-surface/70 backdrop-blur-xl sticky top-0 z-50 no-border bg-surface_container_low flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="hover:bg-surface_container_highest transition-colors p-2 rounded-full flex items-center justify-center scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+</button>
+<h1 class="font-manrope font-bold text-lg tracking-tight text-primary dark:text-blue-200 italic">Academic Atelier</h1>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary-fixed overflow-hidden flex items-center justify-center">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="User avatar placeholder with academic icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkl9KkbxIwbhfwJKTxIVr1S1Jm8hH_g8_24K8tc0wHtqthSxUpegVLiR7Z9yy_RkiIIC9O3aC7qpxIPU26k7-vTvMlgPe9JFT1PUlaJOE9vUscKR_rx9solQ5VWu6ImIuyMJ6WVpWxGV30laiLCrCbnBhyM4Cs8TPQA0zMHpMieOHHUBMcBAhQYZfeB3JnC4wolW-0mInvsk8DVFK5Q7ght5YvIoHGFtu3u92kVxaYooaHwl4ohToUgxsO29NWXATh42Rcg0V5efW0"/>
+</div>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-6 pt-8 pb-32">
+<!-- Search & Header Section -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-2">
+<span class="text-secondary font-semibold tracking-widest text-xs uppercase">Your Collection</span>
+<h2 class="font-headline text-4xl font-extrabold text-primary tracking-tight">History</h2>
+</div>
+<div class="relative group w-full md:w-80">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant group-focus-within:text-secondary transition-colors" data-icon="search">search</span>
+</div>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-high border-none rounded-xl focus:ring-2 focus:ring-secondary/20 focus:bg-surface-container-lowest transition-all placeholder:text-on-surface-variant/60 font-medium" placeholder="Search equations or topics..." type="text"/>
+</div>
+</div>
+</section>
+<!-- Bento Filter Bar -->
+<section class="flex gap-3 overflow-x-auto pb-6 no-scrollbar mb-4">
+<button class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-semibold text-sm whitespace-nowrap shadow-lg shadow-primary/10">All Problems</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-high transition-colors">Calculus</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-high transition-colors">Linear Algebra</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-high transition-colors">Statistics</button>
+<button class="px-5 py-2.5 rounded-full bg-surface-container-low text-on-surface-variant font-medium text-sm whitespace-nowrap hover:bg-surface-container-high transition-colors">Geometry</button>
+</section>
+<!-- Vertical History Feed -->
+<div class="space-y-4">
+<!-- Date Label -->
+<div class="pt-4 pb-2">
+<p class="text-on-surface-variant text-sm font-bold tracking-wider uppercase">Today</p>
+</div>
+<!-- Problem Card 1 -->
+<div class="group relative bg-surface-container-lowest rounded-xl p-5 flex flex-col md:flex-row gap-6 hover:translate-y-[-2px] transition-all editorial-shadow cursor-pointer">
+<div class="w-full md:w-48 h-32 bg-surface-container rounded-lg overflow-hidden flex-shrink-0 relative">
+<img alt="Calculus Problem" class="w-full h-full object-cover mix-blend-multiply opacity-80" data-alt="Handwritten calculus equation on paper closeup" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcgzwqJmWRRhIyiwlkGnfuXEIdrraLGORCPiTV-AHlYt0x0sJyhP6QOo1xS0Gw2BqPtrnELaY8OgyPN4xbL_tyaCLCXfRmncCYw-G-8M64x89RyJ4XSB1WLPth2B24Swqkij7vN2huIeREeIkyqux3YGIA6PSigkHqv98FsS00gf8iHsyvLSGZWS_zPsUZoTXpN6y6fy3WF0Z1qxdgLhU9BAStnyQkNZEvT4bqjP8OGLARaoy0XLOxJjPhIi20OwkN-NxXrYEEAgMn"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent"></div>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline text-xl font-bold text-primary">Integration by Parts</h3>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Solved</span>
+</div>
+<p class="text-on-surface-variant text-sm mt-1 font-medium">Topic: Calculus II • Level: Advanced</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">Final Result</span>
+<span class="text-lg font-headline font-extrabold text-secondary">x sin(x) + cos(x) + C</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="share">share</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="star">star</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Problem Card 2 -->
+<div class="group relative bg-surface-container-lowest rounded-xl p-5 flex flex-col md:flex-row gap-6 hover:translate-y-[-2px] transition-all editorial-shadow cursor-pointer">
+<div class="w-full md:w-48 h-32 bg-tertiary-container flex items-center justify-center rounded-lg overflow-hidden flex-shrink-0">
+<div class="text-on-tertiary-container text-center p-4">
+<span class="material-symbols-outlined text-4xl mb-2" data-icon="functions">functions</span>
+<p class="text-[10px] uppercase font-bold tracking-widest">Digital Input</p>
+</div>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline text-xl font-bold text-primary">Matrix Determinant 3x3</h3>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Solved</span>
+</div>
+<p class="text-on-surface-variant text-sm mt-1 font-medium">Topic: Linear Algebra • Level: Intermediate</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">Final Result</span>
+<span class="text-lg font-headline font-extrabold text-secondary">det(A) = -142</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="share">share</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="star">star</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Date Label -->
+<div class="pt-8 pb-2">
+<p class="text-on-surface-variant text-sm font-bold tracking-wider uppercase">Yesterday</p>
+</div>
+<!-- Problem Card 3 (Text based thumbnail) -->
+<div class="group relative bg-surface-container-lowest rounded-xl p-5 flex flex-col md:flex-row gap-6 hover:translate-y-[-2px] transition-all editorial-shadow cursor-pointer">
+<div class="w-full md:w-48 h-32 bg-surface-container-low rounded-lg p-4 flex flex-col justify-center overflow-hidden flex-shrink-0">
+<p class="text-[11px] font-mono text-on-surface-variant/80 italic leading-tight">Find the volume of the solid generated by revolving the region...</p>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline text-xl font-bold text-primary">Solids of Revolution</h3>
+<span class="bg-surface-container-highest text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Archived</span>
+</div>
+<p class="text-on-surface-variant text-sm mt-1 font-medium">Topic: Geometry/Calculus • Level: Graduate</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">Final Result</span>
+<span class="text-lg font-headline font-extrabold text-secondary">V = 8π/3 units³</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="share">share</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="star">star</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Focus Block for Stats -->
+<section class="mt-16 p-8 bg-tertiary-container rounded-3xl text-on-tertiary-container relative overflow-hidden">
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+<div class="space-y-2 text-center md:text-left">
+<h4 class="font-headline text-2xl font-bold text-white">Academic Progress</h4>
+<p class="text-on-tertiary-container/80 max-w-xs">You've mastered 14 new formulas this week. Keep the momentum going!</p>
+</div>
+<div class="flex gap-8">
+<div class="text-center">
+<p class="text-4xl font-extrabold text-on-secondary-container">89</p>
+<p class="text-[10px] uppercase font-bold tracking-widest opacity-60">Total Solved</p>
+</div>
+<div class="text-center">
+<p class="text-4xl font-extrabold text-on-secondary-container">12</p>
+<p class="text-[10px] uppercase font-bold tracking-widest opacity-60">Day Streak</p>
+</div>
+</div>
+</div>
+<!-- Decorative circle -->
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-on-tertiary-container/10 rounded-full blur-3xl"></div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface/70 backdrop-blur-xl no-border bg-surface_container_low shadow-[0_-4px_24px_rgba(0,0,0,0.06)] rounded-t-3xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform" data-icon="photo_camera">photo_camera</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary_container text-on-secondary-container rounded-xl px-4 py-1.5 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="history" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform" data-icon="functions">functions</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider">Formulas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1.5 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined mb-1 group-hover:scale-110 transition-transform" data-icon="settings">settings</span>
+<span class="font-manrope text-[11px] font-semibold uppercase tracking-wider">Settings</span>
+</a>
+</nav>
+</body></html>
