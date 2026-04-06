@@ -63,6 +63,7 @@ class SolutionScreen extends StatelessWidget {
         title: step['title'] ?? '',
         description: step['description'] ?? '',
         latexFormula: step['formula'] ?? '',
+        explanation: step['explanation'] as String?,
       );
     }).toList();
 
@@ -169,8 +170,8 @@ class SolutionScreen extends StatelessWidget {
             const SizedBox(height: 8),
             
             FinalAnswerCard(
-              answer: solutionData['finalAnswer'] ?? r'$x = ?$',
-              isVerified: true,
+              answer: _resolveAnswer(solutionData, problemData),
+              isVerified: solutionData['success'] == true,
             ),
             
             const SizedBox(height: 16),
@@ -236,6 +237,7 @@ class SolutionScreen extends StatelessWidget {
                       title: step.title,
                       description: step.description,
                       formula: step.latexFormula,
+                      explanation: step.explanation,
                       isLast: index == steps.length - 1,
                     );
                   }).toList(),
@@ -314,5 +316,14 @@ class SolutionScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static String _resolveAnswer(
+      Map<String, dynamic> solution, Map<String, dynamic> problem) {
+    final a = solution['finalAnswer']?.toString() ?? '';
+    if (a.isNotEmpty) return a;
+    final eq = problem['equation']?.toString() ?? '';
+    if (eq.isNotEmpty) return '\$\$${eq.trim()}\$\$';
+    return 'Could not parse';
   }
 }

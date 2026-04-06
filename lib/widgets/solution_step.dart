@@ -9,6 +9,7 @@ class SolutionStep extends StatelessWidget {
   final String title;
   final String description;
   final String? formula;
+  final String? explanation;
   final bool isLast;
 
   const SolutionStep({
@@ -17,6 +18,7 @@ class SolutionStep extends StatelessWidget {
     required this.title,
     required this.description,
     this.formula,
+    this.explanation,
     this.isLast = false,
   });
 
@@ -76,6 +78,28 @@ class SolutionStep extends StatelessWidget {
                     height: 1.5,
                   ),
                 ),
+                if (explanation != null) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentBlue.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: AppColors.accentBlue.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Text(
+                      explanation!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.accentBlue,
+                        height: 1.4,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                ],
                 if (formula != null) ...[
                   const SizedBox(height: 12),
                   Container(

@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../providers/ai_provider.dart';
 import '../services/services.dart';
 import '../theme/theme.dart';
 import '../widgets/scan_overlay.dart';
@@ -9,16 +11,15 @@ import '../widgets/detected_pattern_card.dart';
 import 'model_download_screen.dart';
 import 'solution_screen.dart';
 
-class ScanScreen extends StatefulWidget {
+class ScanScreen extends ConsumerStatefulWidget {
   const ScanScreen({super.key});
 
   @override
-  State<ScanScreen> createState() => _ScanScreenState();
+  ConsumerState<ScanScreen> createState() => _ScanScreenState();
 }
 
-class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
+class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObserver {
   final CameraService _cameraService = CameraService();
-  final AIService _aiService = AIService();
   final ImagePicker _imagePicker = ImagePicker();
   
   bool _showDetection = false;
@@ -58,7 +59,9 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _checkModelAndPromptDownload() async {
-    if (!_aiService.isModelInstalled) {
+    final modelState = ref.read(modelProvider);
+    
+    if (!modelState.isInstalled) {
       // Show model download screen
       await Future.delayed(const Duration(milliseconds: 500));
       if (mounted) {
@@ -68,24 +71,15 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
         );
         
         if (result == true) {
-          // Model was loaded successfully
           setState(() {
-            _detectionStatus = 'AI model ready. Align problem to scan.';
+            _detectionStatus = 'Solver model ready. Align problem to scan.';
           });
         }
       }
-    } else if (!_aiService.isModelLoaded) {
-      // Model is installed but not loaded
-      try {
-        await _aiService.loadModel();
-        setState(() {
-          _detectionStatus = 'AI model ready. Align problem to scan.';
-        });
-      } catch (e) {
-        setState(() {
-          _detectionStatus = 'Error loading AI model. Please restart app.';
-        });
-      }
+    } else if (!modelState.isLoaded) {
+      setState(() {
+        _detectionStatus = 'Loading solver model...';
+      });
     }
   }
 
@@ -160,40 +154,25 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
 
   Future<void> _processImage(Uint8List imageBytes) async {
     setState(() {
-      _detectionStatus = 'Analyzing image with AI...';
+      _detectionStatus = 'Reading and solving...';
     });
 
     try {
-      // Check if model is ready
-      if (!_aiService.isModelLoaded) {
-        setState(() {
-          _isProcessing = false;
-          _detectionStatus = 'AI model not ready. Please load model first.';
-        });
-        return;
-      }
+      final aiService = ref.read(aiServiceProvider);
 
-      // Process image with AI
-      final result = await _aiService.processImage(imageBytes);
-      
-      if (result.containsKey('error')) {
-        setState(() {
-          _isProcessing = false;
-          _detectionStatus = result['error'];
-          _showDetection = false;
-        });
-      } else {
-        setState(() {
-          _isProcessing = false;
-          _detectedProblem = result;
-          _showDetection = true;
-          _detectionStatus = 'Problem detected! Tap View to see solution.';
-        });
-      }
+      // OCR + solve in one server round-trip
+      final result = await aiService.processImageAndSolve(imageBytes);
+
+      setState(() {
+        _isProcessing = false;
+        _detectedProblem = result;
+        _showDetection = true;
+        _detectionStatus = 'Problem detected. Tap View to see solution.';
+      });
     } catch (e) {
       setState(() {
         _isProcessing = false;
-        _detectionStatus = 'Error processing image: $e';
+        _detectionStatus = 'Error: $e';
         _showDetection = false;
       });
     }
@@ -202,40 +181,46 @@ class _ScanScreenState extends State<ScanScreen> with WidgetsBindingObserver {
   void _navigateToSolution() async {
     if (_detectedProblem == null) return;
 
-    setState(() {
-      _detectionStatus = 'Generating solution...';
-      _isProcessing = true;
-    });
+    // Combined result has both OCR and solution fields
+    final combined = _detectedProblem!;
+    final equation = combined['equation'] as String? ?? '';
+    final problem = {
+      'title': 'Detected Problem',
+      'equation': equation,
+      'subject': 'Mathematics',
+      'topic': _inferTopic(equation),
+      'difficulty': 'intermediate',
+    };
+    final solution = {
+      'finalAnswer': combined['finalAnswer'] ?? combined['answer'] ?? '',
+      'steps': combined['steps'] ?? [],
+      'method': combined['method'] ?? '',
+      'success': combined['success'] ?? false,
+    };
 
-    try {
-      final equation = _detectedProblem!['equation'] ?? '';
-      final subject = _detectedProblem!['subject'] ?? 'Mathematics';
-      
-      // Generate solution using AI
-      final solution = await _aiService.generateSolution(equation, subject);
-      
-      setState(() {
-        _isProcessing = false;
-        _detectionStatus = 'Solution ready!';
-      });
-
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SolutionScreen(
-              problem: _detectedProblem!,
-              solution: solution,
-            ),
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SolutionScreen(
+            problem: problem,
+            solution: solution,
           ),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _isProcessing = false;
-        _detectionStatus = 'Error generating solution: $e';
-      });
+        ),
+      );
     }
+  }
+
+  String _inferTopic(String latex) {
+    final l = latex.toLowerCase();
+    if (l.contains(r'\sin') || l.contains(r'\cos') || l.contains(r'\tan')) {
+      return 'Trigonometry';
+    }
+    if (l.contains(r'\begin{cases}') || l.split('=').length > 2) {
+      return 'Systems of Equations';
+    }
+    if (l.contains(r'\frac') || l.contains('=')) return 'Algebra';
+    return 'General';
   }
 
   @override

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \":*)",
+      "Bash(python -c \"import onnx; e=onnx.load\\(''C:/Users/austi.DESKTOP-QRQEJQ5/projects/pix2text-mfr-1.5/encoder_model.onnx''\\); print\\(''ENC IN:'',[i.name for i in e.graph.input]\\); print\\(''ENC OUT:'',[o.name for o in e.graph.output]\\); d=onnx.load\\(''C:/Users/austi.DESKTOP-QRQEJQ5/projects/pix2text-mfr-1.5/decoder_model.onnx''\\); print\\(''DEC IN:'',[i.name for i in d.graph.input]\\); print\\(''DEC OUT:'',[o.name for o in d.graph.output]\\)\")",
+      "Bash(pip show:*)",
+      "Bash(python test_ocr.py \"C:/Users/austi.DESKTOP-QRQEJQ5/Documents/ShareX/Screenshots/2026-03/brave_d7s3nWBPhm.png\")",
+      "Bash(flutter pub:*)",
+      "Bash(flutter analyze:*)",
+      "Read(//c/Users/austi.DESKTOP-QRQEJQ5/projects/mathwizard_server/**)",
+      "Bash(python -c \"from math_solver import solve_problem; import json; r = solve_problem\\(''2x + 3 = 7''\\); print\\(json.dumps\\(r, indent=2, default=str\\)\\)\")",
+      "Bash(python -c \"import antlr4; print\\(antlr4.__version__\\)\")",
+      "Bash(python -c \"from sympy.parsing.latex import parse_latex; print\\(parse_latex\\(r''2 \\\\cdot x + 3''\\)\\)\")",
+      "Bash(python -m pip list)",
+      "Bash(python -m pip install \"antlr4-python3-runtime==4.11.0\")",
+      "Bash(python -c \":*)",
+      "Bash(python debug_test.py)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}

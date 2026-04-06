@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../math/math.dart';
-import '../services/services.dart';
+import '../services/ai_service.dart';
 import '../theme/theme.dart';
 
 class MathFunctionDemoScreen extends StatefulWidget {
@@ -12,7 +12,6 @@ class MathFunctionDemoScreen extends StatefulWidget {
 
 class _MathFunctionDemoScreenState extends State<MathFunctionDemoScreen> {
   final TextEditingController _expressionController = TextEditingController();
-  final FunctionCallingService _functionService = FunctionCallingService();
   final AIService _aiService = AIService();
   
   String _result = '';
@@ -67,12 +66,10 @@ Step 2: Multiply result by 4
 Final answer: 20
 ''';
 
-    _functionService.processResponse(llmResponse).then((processed) {
-      setState(() {
-        _isCalculating = false;
-        _result = 'Function calling test complete!';
-        _steps = processed;
-      });
+    setState(() {
+      _isCalculating = false;
+      _result = 'Function calling test complete!';
+      _steps = llmResponse;
     });
   }
 

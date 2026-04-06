@@ -66,9 +66,15 @@ class MathExpressionEvaluator {
     'min': (List<dynamic> args) => args.isNotEmpty ? args.reduce((a, b) => a < b ? a : b) : 0,
     'pow': (List<dynamic> args) => args.length >= 2 ? math.pow(args[0], args[1]) : 0,
     'fact': (List<dynamic> args) => args.isNotEmpty ? _factorial(args[0].toInt()) : 0,
+    'log2': (List<dynamic> args) => args.isNotEmpty ? math.log(args[0]) / math.log(2) : 0,
+    // logb(base, x) = log(x)/log(base)
+    'logb': (List<dynamic> args) => args.length >= 2 ? math.log(args[1]) / math.log(args[0]) : 0,
     'pi': (List<dynamic> args) => math.pi,
     'e': (List<dynamic> args) => math.e,
   };
+
+  // Functions that consume two arguments from the stack
+  static const _twoArgFunctions = {'logb', 'pow'};
 
   static double _toRadians(double degrees) => degrees * math.pi / 180;
 
@@ -297,12 +303,12 @@ class MathExpressionEvaluator {
           break;
 
         case TokenType.function:
-          // Count arguments by looking back in the stack
-          // For simplicity, we'll handle common functions with fixed args
           List<dynamic> args = [];
-          // Pop arguments until we hit a marker or run out
-          // This is simplified - in practice, you'd track argument count
-          if (stack.isNotEmpty) {
+          if (_twoArgFunctions.contains(token.value) && stack.length >= 2) {
+            final arg2 = stack.removeLast();
+            final arg1 = stack.removeLast();
+            args = [arg1, arg2];
+          } else if (stack.isNotEmpty) {
             args.add(stack.removeLast());
           }
 

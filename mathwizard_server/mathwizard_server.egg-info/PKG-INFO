@@ -1,0 +1,109 @@
+Metadata-Version: 2.4
+Name: mathwizard-server
+Version: 0.1.0
+Summary: Local FastAPI server for MathWizard using Gemma vision plus internal math tools.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: pydantic>=2.8.0
+Requires-Dist: python-multipart>=0.0.9
+Requires-Dist: sympy>=1.13.0
+Requires-Dist: uvicorn[standard]>=0.30.0
+Requires-Dist: Pillow>=10.4.0
+Provides-Extra: transformers
+Requires-Dist: accelerate>=0.34.0; extra == "transformers"
+Requires-Dist: torch>=2.4.0; extra == "transformers"
+Requires-Dist: transformers>=4.55.0; extra == "transformers"
+Requires-Dist: torchvision>=0.19.0; extra == "transformers"
+
+# MathWizard Server
+
+Local FastAPI backend for MathWizard. The intended flow is:
+
+1. Flutter uploads an image to `/ocr-and-solve`
+2. The server runs a local Gemma multimodal model
+3. The model emits structured tool intents
+4. The server validates and executes internal math tools
+5. The server returns strict JSON steps to Flutter
+
+## Status
+
+This repo now contains the server scaffold and orchestration loop. You still need to accept the Gemma license on Hugging Face, point it at a local Gemma 4-capable model checkpoint, and install Python dependencies.
+
+## Quick start
+
+```bash
+cd mathwizard_server
+python -m venv .venv
+.venv\Scripts\activate
+pip install -e .[transformers]
+set MW_BACKEND=transformers
+set MW_GEMMA_MODEL_ID=google/gemma-4-E2B-it
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+If you want to bring the server up before wiring a real model, leave `MW_BACKEND` unset. That uses a stub backend:
+
+- `/health` works
+- `/solve` works for simple text equations using internal SymPy tools
+- `/ocr` and `/ocr-and-solve` return a clear configuration error until a Gemma backend is enabled
+
+## Environment variables
+
+- `MW_BACKEND`: `stub` or `transformers`
+- `MW_GEMMA_MODEL_ID`: model identifier or local path
+  - `google/gemma-4-E2B-it` if you want the ~3.2 GB Q4 class
+  - `google/gemma-4-E4B-it` if you can afford roughly ~5 GB Q4 and want better math/vision quality
+- `MW_GEMMA_DEVICE`: `cuda`, `cpu`, or `auto`
+- `MW_GEMMA_DTYPE`: `auto`, `bfloat16`, `float16`, `float32`
+- `MW_REQUEST_TIMEOUT_SECONDS`: request timeout budget for orchestration
+
+## E2B guidance
+
+If you are using `google/gemma-4-E2B-it`, keep the orchestration strict:
+
+- use narrow JSON schemas
+- keep tool names closed and typed
+- limit tool calls to a small set
+- prefer one extraction pass, one tool-planning pass, and one final synthesis pass
+- keep prompts explicit about "JSON only"
+
+The current scaffold is tuned for that smaller-model behavior and includes a single repair pass when the model returns malformed JSON.
+
+## Endpoints
+
+- `GET /health`
+- `POST /ocr`
+- `POST /solve`
+- `POST /ocr-and-solve`
+
+The response shape is compatible with the existing Flutter app:
+
+```json
+{
+  "success": true,
+  "latex": "x^2 - 5x + 6 = 0",
+  "answer": "x = 2 or x = 3",
+  "finalAnswer": "x = 2 or x = 3",
+  "method": "quadratic_formula",
+  "problem_type": "quadratic",
+  "steps": [
+    {
+      "number": 1,
+      "title": "Identify coefficients",
+      "description": "Read a, b, and c from the equation.",
+      "formula": "$$a = 1, b = -5, c = 6$$",
+      "explanation": "These feed the quadratic formula."
+    }
+  ],
+  "error": null
+}
+```
+
+## Architecture
+
+- `app/schemas.py`: typed request/response contracts
+- `app/tools.py`: deterministic internal math tools
+- `app/gemma_client.py`: local Gemma runner abstraction
+- `app/orchestrator.py`: tool-planning and response synthesis loop
+- `app/main.py`: FastAPI app
