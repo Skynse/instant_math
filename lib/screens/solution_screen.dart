@@ -9,15 +9,10 @@ class SolutionScreen extends StatelessWidget {
   final Map<String, dynamic>? problem;
   final Map<String, dynamic>? solution;
 
-  const SolutionScreen({
-    super.key,
-    this.problem,
-    this.solution,
-  });
+  const SolutionScreen({super.key, this.problem, this.solution});
 
   @override
   Widget build(BuildContext context) {
-    // Use provided data or fallback to mock data
     final problemData = problem ?? {
       'title': 'Solve for x:',
       'equation': r'3(x - 5) + 4 = 2x + 8',
@@ -25,36 +20,30 @@ class SolutionScreen extends StatelessWidget {
       'topic': 'Linear Equations',
       'difficulty': 'intermediate',
     };
-
     final solutionData = solution ?? {
-      'finalAnswer': r'$x = 19$',
+      'finalAnswer': r'$$x = 19$$',
       'steps': [
         {
           'number': 1,
-          'title': 'Expand the expression',
-          'description': 'Apply the distributive property to the left side.',
-          'formula': r'$$3(x - 5) + 4 = 2x + 8$$' + '\n' + r'$$3x - 15 + 4 = 2x + 8$$',
+          'title': 'Expand',
+          'description': 'Apply the distributive property.',
+          'formula': r'$$3x - 15 + 4 = 2x + 8$$',
         },
         {
           'number': 2,
           'title': 'Combine like terms',
-          'description': 'On the left side, combine the constant terms -15 and +4.',
+          'description': '',
           'formula': r'$$3x - 11 = 2x + 8$$',
         },
         {
           'number': 3,
-          'title': 'Isolate variable terms',
-          'description': r'Subtract $2x$ from both sides to move all x-terms to the left.',
-          'formula': r'$$3x - 2x - 11 = 2x - 2x + 8$$' + '\n' + r'$$x - 11 = 8$$',
-        },
-        {
-          'number': 4,
-          'title': 'Solve for x',
-          'description': 'Add 11 to both sides to isolate x.',
-          'formula': r'$$x - 11 + 11 = 8 + 11$$' + '\n' + r'$$x = 19$$',
+          'title': 'Isolate x',
+          'description': '',
+          'formula': r'$$x = 19$$',
         },
       ],
       'method': 'Algebraic manipulation',
+      'success': true,
     };
 
     final steps = (solutionData['steps'] as List<dynamic>? ?? []).map((step) {
@@ -67,7 +56,6 @@ class SolutionScreen extends StatelessWidget {
       );
     }).toList();
 
-    // Convert difficulty string to enum
     DifficultyLevel difficultyLevel;
     switch (problemData['difficulty']?.toString().toLowerCase()) {
       case 'beginner':
@@ -93,8 +81,10 @@ class SolutionScreen extends StatelessWidget {
       status: ProblemStatus.solved,
       createdAt: DateTime.now(),
       solvedAt: DateTime.now(),
-      isVerified: true,
+      isVerified: solutionData['success'] == true,
     );
+
+    final finalAnswer = _resolveAnswer(solutionData, problemData);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -103,23 +93,14 @@ class SolutionScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Academic Atelier'),
-        actions: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: Colors.grey[300],
-            child: const Icon(Icons.person, size: 18),
-          ),
-          const SizedBox(width: 16),
-        ],
+        title: const Text('MathWizard'),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 60),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            
-            // Current problem label
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
@@ -129,7 +110,7 @@ class SolutionScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
-                  'CURRENT PROBLEM',
+                  'SOLUTION',
                   style: TextStyle(
                     color: AppColors.accentBlue,
                     fontSize: 11,
@@ -138,10 +119,8 @@ class SolutionScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
             const SizedBox(height: 16),
-            
-            // Problem card
+
             ProblemCard(
               title: problemObj.title,
               equation: problemObj.rawEquation,
@@ -150,14 +129,12 @@ class SolutionScreen extends StatelessWidget {
               level: problemObj.levelLabel,
               isVerified: problemObj.isVerified,
             ),
-            
+
             const SizedBox(height: 24),
-            
-            // Final result section
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'FINAL RESULT',
+                'FINAL ANSWER',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -166,152 +143,84 @@ class SolutionScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
             const SizedBox(height: 8),
-            
             FinalAnswerCard(
-              answer: _resolveAnswer(solutionData, problemData),
+              answer: finalAnswer,
               isVerified: solutionData['success'] == true,
             ),
-            
-            const SizedBox(height: 16),
-            
-            // Action buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.bookmark),
-                      label: const Text('Save to History'),
-                    ),
+
+            if (solutionData['method'] != null &&
+                (solutionData['method'] as String).isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Method: ${solutionData['method']}',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
                   ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.lightbulb_outline),
-                      label: const Text('Explain More'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.primary),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            
+            ],
+
             const SizedBox(height: 32),
-            
-            // Logical Breakdown section
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'Logical Breakdown',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                'Step-by-Step Solution',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Steps
+            const SizedBox(height: 16),
+
             if (steps.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: steps.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final step = entry.value;
                     return SolutionStep(
-                      stepNumber: step.stepNumber,
-                      title: step.title,
-                      description: step.description,
-                      formula: step.latexFormula,
-                      explanation: step.explanation,
-                      isLast: index == steps.length - 1,
+                      stepNumber: entry.value.stepNumber,
+                      title: entry.value.title,
+                      description: entry.value.description,
+                      formula: entry.value.latexFormula,
+                      explanation: entry.value.explanation,
+                      isLast: entry.key == steps.length - 1,
                     );
                   }).toList(),
+                ),
+              )
+            else if (solutionData['success'] == false)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.red),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          solutionData['error']?.toString() ??
+                              'Could not solve this problem.',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               )
             else
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'No solution steps available.',
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
+                child: Text('No steps available.'),
               ),
-            
-            const SizedBox(height: 24),
-            
-            // Related concept card
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.primaryDark,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.accentBlue.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.lightbulb,
-                      color: AppColors.accentBlue,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Related Concept',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Method used: ${solutionData['method'] ?? 'Standard approach'}',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 14,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.primaryDark,
-                      ),
-                      child: const Text('View Formula Sheet'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 100),
           ],
         ),
       ),
@@ -324,6 +233,6 @@ class SolutionScreen extends StatelessWidget {
     if (a.isNotEmpty) return a;
     final eq = problem['equation']?.toString() ?? '';
     if (eq.isNotEmpty) return '\$\$${eq.trim()}\$\$';
-    return 'Could not parse';
+    return 'Could not solve';
   }
 }

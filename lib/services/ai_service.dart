@@ -1,6 +1,4 @@
 import 'dart:typed_data';
-import '../math/expression_evaluator.dart';
-import '../math/math_tools.dart';
 import 'server_service.dart';
 
 /// Service class for handling AI/math operations via the Python FastAPI server.
@@ -35,8 +33,7 @@ class AIService {
   }
 
   /// Solve a LaTeX equation via the server; returns a solution map.
-  Future<Map<String, dynamic>> generateSolution(
-      String equation, String subject) async {
+  Future<Map<String, dynamic>> generateSolution(String equation, String subject) async {
     final result = await _server.solve(equation);
     if (result['success'] != true) {
       throw Exception(result['error'] ?? 'Server failed to solve equation');
@@ -45,8 +42,7 @@ class AIService {
   }
 
   /// Process image AND solve in a single server round-trip.
-  Future<Map<String, dynamic>> processImageAndSolve(
-      Uint8List imageBytes) async {
+  Future<Map<String, dynamic>> processImageAndSolve(Uint8List imageBytes) async {
     final result = await _server.ocrAndSolve(imageBytes);
     return _serverResultToMap(result);
   }
@@ -66,21 +62,43 @@ class AIService {
       };
     }).toList();
 
+    final latex = r['latex'] as String? ?? '';
+
     return {
-      'finalAnswer': r['answer'] ?? '',
+      'finalAnswer': r['finalAnswer'] as String? ?? r['answer'] as String? ?? '',
       'steps': steps,
       'method': r['method'] ?? '',
       'success': r['success'] ?? false,
       'problemType': r['problem_type'] ?? 'unknown',
       'error': r['error'],
-      // Keep equation accessible at top level
-      'equation': r['latex'] ?? '',
+      'equation': latex,
+      'title': _titleFromLatex(latex, r['problem_type'] as String? ?? ''),
     };
+  }
+
+  String _titleFromLatex(String latex, String problemType) {
+    if (latex.isEmpty) return 'Detected Problem';
+    final typeLabel = {
+      'linear': 'Linear Equation',
+      'quadratic': 'Quadratic Equation',
+      'polynomial': 'Polynomial Equation',
+      'system': 'System of Equations',
+      'inequality': 'Inequality',
+      'indefinite_integral': 'Indefinite Integral',
+      'definite_integral': 'Definite Integral',
+      'derivative_order_1': 'Derivative',
+      'derivative_order_2': 'Second Derivative',
+      'limit': 'Limit',
+      'arithmetic': 'Expression',
+    }[problemType];
+    return typeLabel ?? 'Math Problem';
   }
 
   String _inferTopic(String latex) {
     final lower = latex.toLowerCase();
     if (lower.contains(r'\int') || lower.contains('dx')) return 'Calculus';
+    if (lower.contains(r'\lim')) return 'Limits';
+    if (lower.contains(r'\frac{d}') || lower.contains(r"d/d")) return 'Calculus';
     if (lower.contains(r'\sin') ||
         lower.contains(r'\cos') ||
         lower.contains(r'\tan')) return 'Trigonometry';
@@ -90,18 +108,6 @@ class AIService {
     if (lower.contains(r'\frac') || lower.contains('=')) return 'Algebra';
     return 'General';
   }
-
-  // ── Local math utilities (no server needed) ────────────────────────────────
-
-  double? calculate(String expression) =>
-      MathExpressionEvaluator.tryEvaluate(expression);
-
-  dynamic executeMathTool(String toolName, Map<String, dynamic> args) =>
-      MathTools.executeTool(toolName, args);
-
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
-
-  Future<void> initialize() async {}
 
   Future<void> dispose() async {
     _server.dispose();

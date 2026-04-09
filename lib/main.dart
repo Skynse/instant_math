@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'services/server_service.dart';
 import 'theme/theme.dart';
 import 'screens/screens.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ServerConfig.load();
   runApp(const ProviderScope(child: MyApp()));
 }
 

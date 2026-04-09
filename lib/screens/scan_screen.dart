@@ -8,7 +8,6 @@ import '../services/services.dart';
 import '../theme/theme.dart';
 import '../widgets/scan_overlay.dart';
 import '../widgets/detected_pattern_card.dart';
-import 'model_download_screen.dart';
 import 'solution_screen.dart';
 
 class ScanScreen extends ConsumerStatefulWidget {
@@ -21,7 +20,7 @@ class ScanScreen extends ConsumerStatefulWidget {
 class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObserver {
   final CameraService _cameraService = CameraService();
   final ImagePicker _imagePicker = ImagePicker();
-  
+
   bool _showDetection = false;
   bool _isProcessing = false;
   bool _isCameraInitialized = false;
@@ -33,7 +32,6 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initializeCamera();
-    _checkModelAndPromptDownload();
   }
 
   @override
@@ -46,10 +44,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = _cameraService.controller;
-
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
+    if (cameraController == null || !cameraController.value.isInitialized) return;
 
     if (state == AppLifecycleState.inactive) {
       cameraController.dispose();
@@ -58,55 +53,23 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
     }
   }
 
-  Future<void> _checkModelAndPromptDownload() async {
-    final modelState = ref.read(modelProvider);
-    
-    if (!modelState.isInstalled) {
-      // Show model download screen
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (mounted) {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ModelDownloadScreen()),
-        );
-        
-        if (result == true) {
-          setState(() {
-            _detectionStatus = 'Solver model ready. Align problem to scan.';
-          });
-        }
-      }
-    } else if (!modelState.isLoaded) {
-      setState(() {
-        _detectionStatus = 'Loading solver model...';
-      });
-    }
-  }
-
   Future<void> _initializeCamera() async {
     try {
       await _cameraService.initializeController();
       if (mounted) {
-        setState(() {
-          _isCameraInitialized = true;
-        });
+        setState(() => _isCameraInitialized = true);
       }
     } catch (e) {
-      print('Error initializing camera: $e');
-      setState(() {
-        _detectionStatus = 'Camera error: $e';
-      });
+      setState(() => _detectionStatus = 'Camera unavailable');
     }
   }
 
   Future<void> _takePicture() async {
     if (_isProcessing) return;
-
     setState(() {
       _isProcessing = true;
       _detectionStatus = 'Capturing image...';
     });
-
     try {
       final imageBytes = await _cameraService.takePicture();
       if (imageBytes != null) {
@@ -127,12 +90,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
 
   Future<void> _pickFromGallery() async {
     if (_isProcessing) return;
-
     setState(() {
       _isProcessing = true;
       _detectionStatus = 'Loading image...';
     });
-
     try {
       final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
       if (image != null) {
@@ -153,72 +114,116 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
   }
 
   Future<void> _processImage(Uint8List imageBytes) async {
-    setState(() {
-      _detectionStatus = 'Reading and solving...';
-    });
-
+    setState(() => _detectionStatus = 'Reading and solving...');
     try {
       final aiService = ref.read(aiServiceProvider);
-
-      // OCR + solve in one server round-trip
       final result = await aiService.processImageAndSolve(imageBytes);
-
       setState(() {
         _isProcessing = false;
         _detectedProblem = result;
         _showDetection = true;
-        _detectionStatus = 'Problem detected. Tap View to see solution.';
+        _detectionStatus = result['success'] == true
+            ? 'Problem solved — tap View Solution'
+            : 'Could not solve: ${result['error'] ?? 'unknown error'}';
       });
     } catch (e) {
       setState(() {
         _isProcessing = false;
-        _detectionStatus = 'Error: $e';
+        _detectionStatus = 'Server error: $e';
         _showDetection = false;
       });
     }
   }
 
-  void _navigateToSolution() async {
-    if (_detectedProblem == null) return;
+  void _openManualInput() {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Enter Equation'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: r'e.g.  x^2 - 5x + 6 = 0  or  \int x^2 dx',
+            helperText: 'LaTeX or plain math notation',
+          ),
+          maxLines: 3,
+          minLines: 1,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              final text = controller.text.trim();
+              if (text.isNotEmpty) _solveText(text);
+            },
+            child: const Text('Solve'),
+          ),
+        ],
+      ),
+    );
+  }
 
-    // Combined result has both OCR and solution fields
+  Future<void> _solveText(String text) async {
+    if (_isProcessing) return;
+    setState(() {
+      _isProcessing = true;
+      _showDetection = false;
+      _detectionStatus = 'Solving...';
+    });
+    try {
+      final aiService = ref.read(aiServiceProvider);
+      final result = await aiService.generateSolution(text, 'Mathematics');
+      setState(() {
+        _isProcessing = false;
+        _detectedProblem = result;
+        _showDetection = true;
+        _detectionStatus = result['success'] == true
+            ? 'Solved — tap View Solution'
+            : 'Could not solve: ${result['error'] ?? 'unknown error'}';
+      });
+    } catch (e) {
+      setState(() {
+        _isProcessing = false;
+        _detectionStatus = 'Server error: $e';
+        _showDetection = false;
+      });
+    }
+  }
+
+  void _navigateToSolution() {
+    if (_detectedProblem == null) return;
     final combined = _detectedProblem!;
     final equation = combined['equation'] as String? ?? '';
     final problem = {
-      'title': 'Detected Problem',
+      'title': combined['title'] ?? 'Math Problem',
       'equation': equation,
       'subject': 'Mathematics',
       'topic': _inferTopic(equation),
       'difficulty': 'intermediate',
     };
     final solution = {
-      'finalAnswer': combined['finalAnswer'] ?? combined['answer'] ?? '',
+      'finalAnswer': combined['finalAnswer'] ?? '',
       'steps': combined['steps'] ?? [],
       'method': combined['method'] ?? '',
       'success': combined['success'] ?? false,
     };
-
-    if (mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SolutionScreen(
-            problem: problem,
-            solution: solution,
-          ),
-        ),
-      );
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SolutionScreen(problem: problem, solution: solution),
+      ),
+    );
   }
 
   String _inferTopic(String latex) {
     final l = latex.toLowerCase();
-    if (l.contains(r'\sin') || l.contains(r'\cos') || l.contains(r'\tan')) {
-      return 'Trigonometry';
-    }
-    if (l.contains(r'\begin{cases}') || l.split('=').length > 2) {
-      return 'Systems of Equations';
-    }
+    if (l.contains(r'\int') || l.contains('dx')) return 'Calculus';
+    if (l.contains(r'\lim')) return 'Limits';
+    if (l.contains(r'\sin') || l.contains(r'\cos') || l.contains(r'\tan')) return 'Trigonometry';
+    if (l.contains(';') || l.split('=').length > 2) return 'Systems of Equations';
     if (l.contains(r'\frac') || l.contains('=')) return 'Algebra';
     return 'General';
   }
@@ -238,25 +243,18 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.camera_alt,
-                      size: 64,
-                      color: Colors.white24,
-                    ),
+                    Icon(Icons.camera_alt, size: 64, color: Colors.white24),
                     SizedBox(height: 16),
-                    Text(
-                      'Initializing camera...',
-                      style: TextStyle(color: Colors.white54),
-                    ),
+                    Text('Initializing camera...', style: TextStyle(color: Colors.white54)),
                   ],
                 ),
               ),
             ),
-          
+
           // Scan overlay
           const ScanOverlay(),
-          
-          // Align problem text
+
+          // Center prompt
           if (!_isProcessing && !_showDetection)
             Center(
               child: Container(
@@ -276,7 +274,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                 ),
               ),
             ),
-          
+
           // Bottom controls
           Positioned(
             bottom: 0,
@@ -284,7 +282,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
             right: 0,
             child: Column(
               children: [
-                // Detection status
+                // Status pill
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -305,25 +303,18 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                           ),
                         )
                       else
-                        const Icon(
-                          Icons.auto_fix_high,
-                          color: AppColors.accentTeal,
-                          size: 20,
-                        ),
+                        const Icon(Icons.auto_fix_high, color: AppColors.accentTeal, size: 20),
                       const SizedBox(width: 8),
                       Flexible(
                         child: Text(
                           _detectionStatus,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Camera controls
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
@@ -331,22 +322,17 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.8),
-                      ],
+                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
                     ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Gallery button
                       _buildControlButton(
                         icon: Icons.photo_library,
                         label: 'GALLERY',
                         onTap: _pickFromGallery,
                       ),
-                      
                       // Capture button
                       GestureDetector(
                         onTap: _isProcessing ? null : _takePicture,
@@ -378,24 +364,20 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                           ),
                         ),
                       ),
-                      
-                      // Calc button
                       _buildControlButton(
-                        icon: Icons.calculate,
-                        label: 'CALC',
-                        onTap: () {
-                          // TODO: Open calculator/manual input
-                        },
+                        icon: Icons.edit,
+                        label: 'TYPE',
+                        onTap: _openManualInput,
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Detected pattern card
                 if (_showDetection && _detectedProblem != null)
                   DetectedPatternCard(
-                    patternName: 'DETECTED PROBLEM',
-                    equation: _detectedProblem!['title'] ?? 'Unknown problem',
+                    patternName: _detectedProblem!['title'] ?? 'DETECTED PROBLEM',
+                    equation: _detectedProblem!['equation'] as String? ?? '',
                     onView: _navigateToSolution,
                   ),
               ],
@@ -423,11 +405,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
               color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 28,
-            ),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
           const SizedBox(height: 8),
           Text(
