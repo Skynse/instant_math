@@ -49,10 +49,7 @@ class SolutionStep extends StatelessWidget {
               ),
               if (!isLast)
                 Expanded(
-                  child: Container(
-                    width: 2,
-                    color: AppColors.border,
-                  ),
+                  child: Container(width: 2, color: AppColors.border),
                 ),
             ],
           ),
@@ -69,28 +66,28 @@ class SolutionStep extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                    height: 1.5,
+                if (description.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  _LatexText(
+                    data: description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
                   ),
-                ),
-                if (explanation != null) ...[
+                ],
+                if (explanation != null && explanation!.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: AppColors.accentBlue.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: AppColors.accentBlue.withValues(alpha: 0.2),
-                      ),
+                      border: Border.all(color: AppColors.accentBlue.withValues(alpha: 0.2)),
                     ),
-                    child: Text(
-                      explanation!,
+                    child: _LatexText(
+                      data: explanation!,
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.accentBlue,
@@ -100,7 +97,7 @@ class SolutionStep extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (formula != null) ...[
+                if (formula != null && formula!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
@@ -113,12 +110,16 @@ class SolutionStep extends StatelessWidget {
                     child: MarkdownBody(
                       selectable: true,
                       data: formula!,
+                      styleSheet: MarkdownStyleSheet(
+                        p: const TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                      ),
                       builders: {
                         'latex': LatexElementBuilder(
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             color: AppColors.textPrimary,
                           ),
+                          textScaleFactor: 1.1,
                         ),
                       },
                       extensionSet: md.ExtensionSet(
@@ -133,6 +134,32 @@ class SolutionStep extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Renders a string that may contain inline LaTeX ($...$) or block LaTeX ($$...$$).
+class _LatexText extends StatelessWidget {
+  final String data;
+  final TextStyle style;
+
+  const _LatexText({required this.data, required this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    return MarkdownBody(
+      data: data,
+      styleSheet: MarkdownStyleSheet(p: style),
+      builders: {
+        'latex': LatexElementBuilder(
+          textStyle: style,
+          textScaleFactor: 1.0,
+        ),
+      },
+      extensionSet: md.ExtensionSet(
+        [LatexBlockSyntax()],
+        [LatexInlineSyntax()],
       ),
     );
   }

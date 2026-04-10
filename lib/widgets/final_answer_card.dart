@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
+import 'package:markdown/markdown.dart' as md;
 import '../theme/theme.dart';
 
 class FinalAnswerCard extends StatelessWidget {
@@ -23,7 +26,7 @@ class FinalAnswerCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark.withOpacity(0.3),
+            color: AppColors.primaryDark.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -41,11 +44,7 @@ class FinalAnswerCard extends StatelessWidget {
                   color: AppColors.success,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 18,
-                ),
+                child: const Icon(Icons.check, color: Colors.white, size: 18),
               ),
               const SizedBox(width: 12),
               const Text(
@@ -60,46 +59,38 @@ class FinalAnswerCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Text(
-                answer,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'monospace',
-                ),
+          MarkdownBody(
+            data: answer,
+            styleSheet: MarkdownStyleSheet(
+              p: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            builders: {
+              'latex': LatexElementBuilder(
+                textStyle: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                textScaleFactor: 1.2,
               ),
-              if (numericValue != null) ...[
-                const SizedBox(width: 12),
-                Text(
-                  '≈ ${numericValue!.toStringAsFixed(5)}',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ],
+            },
+            extensionSet: md.ExtensionSet(
+              [LatexBlockSyntax()],
+              [LatexInlineSyntax()],
+            ),
           ),
+          if (numericValue != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              '≈ ${numericValue!.toStringAsFixed(5)}',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 16),
+            ),
+          ],
           if (isVerified) ...[
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(
-                  Icons.verified,
-                  color: AppColors.success,
-                  size: 16,
-                ),
+                const Icon(Icons.verified, color: AppColors.success, size: 16),
                 const SizedBox(width: 4),
                 const Text(
                   'Verified Logic',
-                  style: TextStyle(
-                    color: AppColors.success,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(color: AppColors.success, fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
