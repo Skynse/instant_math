@@ -33,8 +33,8 @@ class AIService {
   }
 
   /// Solve a LaTeX equation via the server; returns a solution map.
-  Future<Map<String, dynamic>> generateSolution(String equation, String subject) async {
-    final result = await _server.solve(equation);
+  Future<Map<String, dynamic>> generateSolution(String equation, String subject, {String mode = 'auto'}) async {
+    final result = await _server.solve(equation, mode: mode);
     if (result['success'] != true) {
       throw Exception(result['error'] ?? 'Server failed to solve equation');
     }
@@ -90,6 +90,8 @@ class AIService {
       'derivative_order_2': 'Second Derivative',
       'limit': 'Limit',
       'arithmetic': 'Expression',
+      'expansion': 'Expansion',
+      'factoring': 'Factoring',
     }[problemType];
     return typeLabel ?? 'Math Problem';
   }

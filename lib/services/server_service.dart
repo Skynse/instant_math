@@ -13,7 +13,7 @@ class ServerConfig {
 
   static String get baseUrl => _baseUrl;
 
-  static const Duration timeout = Duration(seconds: 180);
+  static const Duration timeout = Duration(seconds: 30);
 
   /// Load persisted URL from SharedPreferences.
   static Future<void> load() async {
@@ -75,12 +75,15 @@ class ServerService {
   }
 
   /// Send a LaTeX string to the server for step-by-step solving.
-  Future<Map<String, dynamic>> solve(String latex) async {
+  Future<Map<String, dynamic>> solve(
+    String latex, {
+    String mode = 'auto',
+  }) async {
     final res = await _client
         .post(
           Uri.parse('$_base/solve'),
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'latex': latex}),
+          body: jsonEncode({'latex': latex, 'mode': mode}),
         )
         .timeout(ServerConfig.timeout);
 

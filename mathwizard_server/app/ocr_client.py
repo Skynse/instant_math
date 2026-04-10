@@ -6,68 +6,69 @@ from PIL import Image
 
 
 class SuryaOcrClient:
-    """Client for Surya LaTeX OCR - converts math images to LaTeX."""
+    """Math OCR using surya's RecognitionPredictor with math_mode=True."""
 
     def __init__(self) -> None:
         self._predictor = None
+        self._det_predictor = None
 
     def _load_model(self) -> None:
-        """Lazy-load TexifyPredictor on first use."""
         if self._predictor is not None:
             return
-
         try:
-            from surya.texify import TexifyPredictor
+            from surya.recognition import RecognitionPredictor
+            from surya.detection import DetectionPredictor
+            from surya.foundation import FoundationPredictor
+            from surya.settings import settings as surya_settings
         except ImportError as exc:
             raise RuntimeError(
-                "surya is required. Install with: pip install surya-ocr"
+                "surya-ocr is required. Install with:\n"
+                "  python3 -m pip install surya-ocr\n"
+                "  python3 -m pip install torchvision --index-url https://download.pytorch.org/whl/cpu"
             ) from exc
 
-        self._predictor = TexifyPredictor()
+        foundation = FoundationPredictor(
+            checkpoint=surya_settings.RECOGNITION_MODEL_CHECKPOINT
+        )
+        self._predictor = RecognitionPredictor(foundation)
+        self._det_predictor = DetectionPredictor()
 
     def extract_text(self, image_bytes: bytes) -> str:
-        """Extract LaTeX from a math image."""
         self._load_model()
+        img = _preprocess(image_bytes)
 
-        processed_bytes = self._preprocess_image(image_bytes)
-        img = Image.open(io.BytesIO(processed_bytes))
+        from surya.common.surya.schema import TaskNames
 
-        # TexifyPredictor returns one TexifyResult per image; .text is the LaTeX string.
-        results = self._predictor([img])
+        # Treat the full image as one region to OCR with math mode enabled
+        results = self._predictor(
+            [img],
+            task_names=[TaskNames.ocr_without_boxes],
+            det_predictor=self._det_predictor,
+            math_mode=True,
+        )
 
-        if results:
-            return results[0].text.strip()
+        if not results:
+            return ""
 
-        return ""
+        lines = results[0].text_lines
+        if not lines:
+            return ""
 
-    def _preprocess_image(self, image_bytes: bytes) -> bytes:
-        """Preprocess image for optimal OCR performance."""
-        img = Image.open(io.BytesIO(image_bytes))
+        return " ".join(line.text for line in lines if line.text.strip())
 
-        # Convert to RGB if necessary
-        if img.mode != "RGB":
-            img = img.convert("RGB")
 
-        # Surya works well with images up to 1024px on longest side
-        max_size = 1024
-        min_size = 224
-
-        # Resize if too large
-        if max(img.width, img.height) > max_size:
-            ratio = max_size / max(img.width, img.height)
-            new_size = (int(img.width * ratio), int(img.height * ratio))
-            img = img.resize(new_size, Image.Resampling.LANCZOS)
-
-        # Ensure minimum size
-        if min(img.width, img.height) < min_size:
-            ratio = min_size / min(img.width, img.height)
-            new_size = (int(img.width * ratio), int(img.height * ratio))
-            img = img.resize(new_size, Image.Resampling.LANCZOS)
-
-        # Convert back to bytes
-        buffer = io.BytesIO()
-        img.save(buffer, format="PNG")
-        return buffer.getvalue()
+def _preprocess(image_bytes: bytes) -> Image.Image:
+    img = Image.open(io.BytesIO(image_bytes))
+    if img.mode != "RGB":
+        img = img.convert("RGB")
+    min_side = 224
+    if min(img.width, img.height) < min_side:
+        ratio = min_side / min(img.width, img.height)
+        img = img.resize(
+            (int(img.width * ratio), int(img.height * ratio)),
+            Image.Resampling.LANCZOS,
+        )
+    return img
 
 
 def create_ocr_client() -> SuryaOcrClient:

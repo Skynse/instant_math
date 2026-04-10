@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
+import 'package:markdown/markdown.dart' as md;
 import '../theme/theme.dart';
 
 class _FormulaEntry {
@@ -266,12 +269,20 @@ class _FormulaRow extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    entry.latex,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                      fontFamily: 'monospace',
+                  MarkdownBody(
+                    data: '\$\$${entry.latex}\$\$',
+                    styleSheet: MarkdownStyleSheet(
+                      p: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    ),
+                    builders: {
+                      'latex': LatexElementBuilder(
+                        textStyle: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        textScaleFactor: 1.0,
+                      ),
+                    },
+                    extensionSet: md.ExtensionSet(
+                      [LatexBlockSyntax()],
+                      [LatexInlineSyntax()],
                     ),
                   ),
                 ],
@@ -308,12 +319,20 @@ class _FormulaRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: accent.withValues(alpha: 0.2)),
               ),
-              child: Text(
-                entry.latex,
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 14,
-                  color: accent,
+              child: MarkdownBody(
+                data: '\$\$${entry.latex}\$\$',
+                styleSheet: MarkdownStyleSheet(
+                  p: TextStyle(fontSize: 14, color: accent),
+                ),
+                builders: {
+                  'latex': LatexElementBuilder(
+                    textStyle: TextStyle(fontSize: 18, color: accent),
+                    textScaleFactor: 1.1,
+                  ),
+                },
+                extensionSet: md.ExtensionSet(
+                  [LatexBlockSyntax()],
+                  [LatexInlineSyntax()],
                 ),
               ),
             ),

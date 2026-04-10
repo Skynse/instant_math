@@ -15,7 +15,15 @@
       "Bash(python -m pip install \"antlr4-python3-runtime==4.11.0\")",
       "Bash(python -c \":*)",
       "Bash(python debug_test.py)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(\"mathwizard_server/.venv/Scripts/python.exe\" -c \"import surya; print\\(surya.__version__\\)\")",
+      "Bash(\"mathwizard_server/.venv/Scripts/python.exe\" -c \"import pkgutil, surya; print\\([m.name for m in pkgutil.iter_modules\\(surya.__path__\\)]\\)\")",
+      "Bash(\"mathwizard_server/.venv/Scripts/python.exe\" -c \"from surya.recognition import TaskNames, RecognitionPredictor; print\\(list\\(TaskNames\\)\\); help\\(RecognitionPredictor.__init__\\)\")",
+      "Bash(\"mathwizard_server/.venv/Scripts/python.exe\" -c \"from surya.recognition.schema import TextChar; import inspect; print\\(inspect.getsource\\(TextChar\\)\\)\")",
+      "Bash(\"mathwizard_server/.venv/Scripts/python.exe\" -c \"from surya.recognition.schema import BaseChar; import inspect; print\\(inspect.getsource\\(BaseChar\\)\\)\")",
+      "Bash(mathwizard_server/.venv/Scripts/python.exe:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(\"mathwizard_server/.venv/Scripts/pip.exe\" index:*)"
     ]
   }
 }

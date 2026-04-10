@@ -137,36 +137,73 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
 
   void _openManualInput() {
     final controller = TextEditingController();
+    String selectedMode = 'auto';
+
+    const modes = [
+      ('auto', 'Auto-detect'),
+      ('solve', 'Solve'),
+      ('expand', 'Expand'),
+      ('factor', 'Factor'),
+      ('simplify', 'Simplify'),
+      ('differentiate', 'Differentiate'),
+      ('integrate', 'Integrate'),
+    ];
+
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Enter Equation'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: r'e.g.  x^2 - 5x + 6 = 0  or  \int x^2 dx',
-            helperText: 'LaTeX or plain math notation',
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Enter Problem'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: controller,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: r'e.g.  (x+2)(x+3)  or  \int x^2 dx',
+                  helperText: 'LaTeX or plain math notation',
+                ),
+                maxLines: 3,
+                minLines: 1,
+              ),
+              const SizedBox(height: 16),
+              const Text('What do you want to do?',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: modes.map((m) {
+                  final isSelected = selectedMode == m.$1;
+                  return ChoiceChip(
+                    label: Text(m.$2, style: const TextStyle(fontSize: 12)),
+                    selected: isSelected,
+                    onSelected: (_) => setDialogState(() => selectedMode = m.$1),
+                  );
+                }).toList(),
+              ),
+            ],
           ),
-          maxLines: 3,
-          minLines: 1,
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            FilledButton(
+              onPressed: () {
+                final text = controller.text.trim();
+                final mode = selectedMode;
+                Navigator.pop(ctx);
+                if (text.isNotEmpty) _solveText(text, mode: mode);
+              },
+              child: const Text('Go'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              final text = controller.text.trim();
-              if (text.isNotEmpty) _solveText(text);
-            },
-            child: const Text('Solve'),
-          ),
-        ],
       ),
     );
   }
 
-  Future<void> _solveText(String text) async {
+  Future<void> _solveText(String text, {String mode = 'auto'}) async {
     if (_isProcessing) return;
     setState(() {
       _isProcessing = true;
@@ -175,7 +212,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
     });
     try {
       final aiService = ref.read(aiServiceProvider);
-      final result = await aiService.generateSolution(text, 'Mathematics');
+      final result = await aiService.generateSolution(text, 'Mathematics', mode: mode);
       setState(() {
         _isProcessing = false;
         _detectedProblem = result;

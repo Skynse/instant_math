@@ -75,16 +75,30 @@ class SolveOrchestrator:
             return _error("Could not extract text from image", "ocr_failed")
         return self.solve_from_text(raw)
 
-    def solve_from_text(self, text: str) -> SolvedResponse:
+    def solve_from_text(self, text: str, mode: str = "auto") -> SolvedResponse:
         try:
-            return _dispatch(text)
+            return _dispatch(text, mode=mode)
         except Exception as exc:
             return _error(str(exc), "solver_error", latex=text)
 
 
 # ── dispatch ──────────────────────────────────────────────────────────────────
 
-def _dispatch(original: str) -> SolvedResponse:
+def _dispatch(original: str, mode: str = "auto") -> SolvedResponse:
+    # Explicit mode overrides auto-detection
+    if mode == "expand":
+        return _expand(original)
+    if mode == "factor":
+        return _factor(original)
+    if mode == "simplify":
+        normalized = normalize(original)
+        return _evaluate(normalized, original)
+    if mode == "differentiate":
+        return _solve_derivative(original)
+    if mode == "integrate":
+        return _solve_integral(original)
+
+    # Auto-detection
     if _DERIV_FRAC_RE.search(original):
         return _solve_derivative(original)
     if r"\int" in original:
@@ -373,11 +387,11 @@ def _solve_transcendental(
             method="numerical analysis",
             problem_type="transcendental",
             steps=[
-                SolutionStep(1, "Identify transcendental equation",
-                    "This equation mixes algebraic and transcendental functions — no closed-form algebraic solution exists.",
+                SolutionStep(number=1, title="Identify transcendental equation",
+                    description="This equation mixes algebraic and transcendental functions — no closed-form algebraic solution exists.",
                     formula=f"$${sp.latex(equation)}$$"),
-                SolutionStep(2, "Numerical scan",
-                    "Scanned $[-20,\\,20]$ for sign changes. None found — no real solutions exist in this range.",
+                SolutionStep(number=2, title="Numerical scan",
+                    description="Scanned $[-20,\\,20]$ for sign changes. None found — no real solutions exist in this range.",
                     formula=f"$$f({var}) = {sp.latex(expr)} \\neq 0 \\text{{ on }} [-20,20]$$"),
             ],
         )
@@ -1078,13 +1092,13 @@ def _solve_inequality(expr: str, original: str) -> SolvedResponse:
     solution_latex = sp.latex(solution)
 
     steps = [
-        SolutionStep(1, "Identify the inequality",
-            f"Solve ${sp.latex(rel)}$ for ${var}$.", formula=f"$${sp.latex(rel)}$$"),
-        SolutionStep(2, "Rearrange",
-            "Move all terms to one side.",
+        SolutionStep(number=1, title="Identify the inequality",
+            description=f"Solve ${sp.latex(rel)}$ for ${var}$.", formula=f"$${sp.latex(rel)}$$"),
+        SolutionStep(number=2, title="Rearrange",
+            description="Move all terms to one side.",
             formula=f"$${sp.latex(sp.simplify(lhs - rhs))} {op} 0$$"),
-        SolutionStep(3, "Solve for the solution interval",
-            f"The solution for ${var}$:",
+        SolutionStep(number=3, title="Solve for the solution interval",
+            description=f"The solution for ${var}$:",
             formula=f"$${solution_latex}$$"),
     ]
 
@@ -1103,14 +1117,14 @@ def _evaluate(expr: str, original: str) -> SolvedResponse:
     result_latex = sp.latex(result)
 
     steps: list[SolutionStep] = [
-        SolutionStep(1, "Expression", "Evaluate and simplify.", formula=f"$${sp.latex(parsed)}$$"),
-        SolutionStep(2, "Result", "After simplification:", formula=f"$$= {result_latex}$$"),
+        SolutionStep(number=1, title="Expression", description="Evaluate and simplify.", formula=f"$${sp.latex(parsed)}$$"),
+        SolutionStep(number=2, title="Result", description="After simplification:", formula=f"$$= {result_latex}$$"),
     ]
 
     try:
         num = complex(result)
         if num.imag == 0 and result != sp.sympify(f"{num.real:.10g}"):
-            steps.append(SolutionStep(3, "Numerical value", "",
+            steps.append(SolutionStep(number=3, title="Numerical value", description="",
                 formula=f"$$\\approx {num.real:.6g}$$"))
     except Exception:
         pass
@@ -1118,6 +1132,82 @@ def _evaluate(expr: str, original: str) -> SolvedResponse:
     return SolvedResponse(
         success=True, latex=original, answer=str(result), finalAnswer=f"$${result_latex}$$",
         method="simplify", problem_type="arithmetic", steps=steps,
+    )
+
+
+# ── expand ───────────────────────────────────────────────────────────────────
+
+def _expand(original: str) -> SolvedResponse:
+    normalized = normalize(original)
+    # Strip the equation sign if present — expand the LHS expression
+    expr_str = normalized.split("=")[0] if "=" in normalized else normalized
+    try:
+        parsed = _parse(expr_str)
+    except Exception as exc:
+        return _error(str(exc), "parse_error", original)
+
+    expanded = sp.expand(parsed)
+    expanded_latex = sp.latex(expanded)
+
+    steps: list[SolutionStep] = [
+        SolutionStep(number=1, title="Identify expression", description="Apply distributive property to expand the product.",
+                     formula=f"$${sp.latex(parsed)}$$"),
+        SolutionStep(number=2, title="Expand", description="Multiply out all terms:",
+                     formula=f"$$= {expanded_latex}$$"),
+    ]
+
+    # If it's a polynomial, optionally collect like terms note
+    terms = sp.Add.make_args(expanded)
+    if len(terms) > 1:
+        steps.append(SolutionStep(
+            number=3, title="Collect like terms",
+            description=f"The expanded form has {len(terms)} terms.",
+            formula=f"$$= {expanded_latex}$$",
+        ))
+
+    return SolvedResponse(
+        success=True, latex=original,
+        answer=str(expanded), finalAnswer=f"$${expanded_latex}$$",
+        method="expand", problem_type="expansion", steps=steps,
+    )
+
+
+# ── factor ───────────────────────────────────────────────────────────────────
+
+def _factor(original: str) -> SolvedResponse:
+    normalized = normalize(original)
+    expr_str = normalized.split("=")[0] if "=" in normalized else normalized
+    try:
+        parsed = _parse(expr_str)
+    except Exception as exc:
+        return _error(str(exc), "parse_error", original)
+
+    factored = sp.factor(parsed)
+    factored_latex = sp.latex(factored)
+
+    # Check if factoring actually changed anything
+    if factored == parsed or isinstance(factored, sp.core.numbers.Number):
+        return SolvedResponse(
+            success=True, latex=original,
+            answer=str(factored), finalAnswer=f"$${factored_latex}$$",
+            method="factor", problem_type="factoring",
+            steps=[
+                SolutionStep(number=1, title="Expression", description="Check for factorable form.", formula=f"$${sp.latex(parsed)}$$"),
+                SolutionStep(number=2, title="Already irreducible", description="The expression cannot be factored further over the rationals.", formula=f"$${factored_latex}$$"),
+            ],
+        )
+
+    steps: list[SolutionStep] = [
+        SolutionStep(number=1, title="Identify expression", description="Factor the polynomial by finding common factors and roots.",
+                     formula=f"$${sp.latex(parsed)}$$"),
+        SolutionStep(number=2, title="Factored form", description="The completely factored form is:",
+                     formula=f"$$= {factored_latex}$$"),
+    ]
+
+    return SolvedResponse(
+        success=True, latex=original,
+        answer=str(factored), finalAnswer=f"$${factored_latex}$$",
+        method="factor", problem_type="factoring", steps=steps,
     )
 
 
