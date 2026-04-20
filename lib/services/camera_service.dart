@@ -1,6 +1,9 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:math' as math;
+import 'dart:ui';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as img;
 import 'package:permission_handler/permission_handler.dart';
 
 class CameraService {
@@ -35,7 +38,7 @@ class CameraService {
 
       _isInitialized = true;
     } catch (e) {
-      print('Error initializing camera service: $e');
+      debugPrint('Error initializing camera service: $e');
       rethrow;
     }
   }
@@ -67,7 +70,7 @@ class CameraService {
   }
 
   /// Take a picture
-  Future<Uint8List?> takePicture() async {
+  Future<Uint8List?> takePicture({Size? viewportSize, Rect? scanRect}) async {
     if (_controller == null || !_controller!.value.isInitialized) {
       throw Exception('Camera not initialized');
     }
@@ -75,11 +78,55 @@ class CameraService {
     try {
       final XFile photo = await _controller!.takePicture();
       final bytes = await photo.readAsBytes();
+      if (viewportSize != null && scanRect != null) {
+        return _cropToScanRect(bytes, viewportSize, scanRect);
+      }
       return bytes;
     } catch (e) {
-      print('Error taking picture: $e');
+      debugPrint('Error taking picture: $e');
       return null;
     }
+  }
+
+  Uint8List _cropToScanRect(Uint8List bytes, Size viewportSize, Rect scanRect) {
+    final decoded = img.decodeImage(bytes);
+    if (decoded == null ||
+        viewportSize.width <= 0 ||
+        viewportSize.height <= 0) {
+      return bytes;
+    }
+
+    final image = img.bakeOrientation(decoded);
+    final imageSize = Size(image.width.toDouble(), image.height.toDouble());
+    final scale = math.max(
+      viewportSize.width / imageSize.width,
+      viewportSize.height / imageSize.height,
+    );
+
+    final fittedWidth = imageSize.width * scale;
+    final fittedHeight = imageSize.height * scale;
+    final offsetX = (viewportSize.width - fittedWidth) / 2;
+    final offsetY = (viewportSize.height - fittedHeight) / 2;
+
+    final sourceLeft = ((scanRect.left - offsetX) / scale).floor();
+    final sourceTop = ((scanRect.top - offsetY) / scale).floor();
+    final sourceRight = ((scanRect.right - offsetX) / scale).ceil();
+    final sourceBottom = ((scanRect.bottom - offsetY) / scale).ceil();
+
+    final x = sourceLeft.clamp(0, image.width - 1);
+    final y = sourceTop.clamp(0, image.height - 1);
+    final right = sourceRight.clamp(x + 1, image.width);
+    final bottom = sourceBottom.clamp(y + 1, image.height);
+
+    final cropped = img.copyCrop(
+      image,
+      x: x,
+      y: y,
+      width: right - x,
+      height: bottom - y,
+    );
+
+    return Uint8List.fromList(img.encodeJpg(cropped, quality: 95));
   }
 
   /// Pick image from gallery

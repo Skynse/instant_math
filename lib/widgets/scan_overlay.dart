@@ -6,9 +6,20 @@ class ScanOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size.infinite,
-      painter: ScanOverlayPainter(),
+    return CustomPaint(size: Size.infinite, painter: ScanOverlayPainter());
+  }
+}
+
+class ScanFrameGeometry {
+  static Rect rectFor(Size size) {
+    final width = size.width * 0.9;
+    final height = width * 0.42;
+    final centerY = size.height * 0.4;
+
+    return Rect.fromCenter(
+      center: Offset(size.width / 2, centerY),
+      width: width,
+      height: height,
     );
   }
 }
@@ -17,7 +28,7 @@ class ScanOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.primary.withOpacity(0.3)
+      ..color = AppColors.primary.withValues(alpha: 0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
@@ -26,37 +37,49 @@ class ScanOverlayPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
 
-    final scanArea = Rect.fromCenter(
-      center: Offset(size.width / 2, size.height / 2 - 50),
-      width: size.width * 0.85,
-      height: size.width * 0.85,
-    );
+    final scanArea = ScanFrameGeometry.rectFor(size);
 
     // Draw dashed border
     final dashPath = Path();
     const dashWidth = 10.0;
     const dashSpace = 5.0;
-    
+
     // Top edge
-    for (double x = scanArea.left; x < scanArea.right; x += dashWidth + dashSpace) {
+    for (
+      double x = scanArea.left;
+      x < scanArea.right;
+      x += dashWidth + dashSpace
+    ) {
       dashPath.moveTo(x, scanArea.top);
       dashPath.lineTo(x + dashWidth, scanArea.top);
     }
-    
+
     // Bottom edge
-    for (double x = scanArea.left; x < scanArea.right; x += dashWidth + dashSpace) {
+    for (
+      double x = scanArea.left;
+      x < scanArea.right;
+      x += dashWidth + dashSpace
+    ) {
       dashPath.moveTo(x, scanArea.bottom);
       dashPath.lineTo(x + dashWidth, scanArea.bottom);
     }
-    
+
     // Left edge
-    for (double y = scanArea.top; y < scanArea.bottom; y += dashWidth + dashSpace) {
+    for (
+      double y = scanArea.top;
+      y < scanArea.bottom;
+      y += dashWidth + dashSpace
+    ) {
       dashPath.moveTo(scanArea.left, y);
       dashPath.lineTo(scanArea.left, y + dashWidth);
     }
-    
+
     // Right edge
-    for (double y = scanArea.top; y < scanArea.bottom; y += dashWidth + dashSpace) {
+    for (
+      double y = scanArea.top;
+      y < scanArea.bottom;
+      y += dashWidth + dashSpace
+    ) {
       dashPath.moveTo(scanArea.right, y);
       dashPath.lineTo(scanArea.right, y + dashWidth);
     }
@@ -65,7 +88,7 @@ class ScanOverlayPainter extends CustomPainter {
 
     // Draw corners
     const cornerLength = 30.0;
-    
+
     // Top-left corner
     canvas.drawLine(
       Offset(scanArea.left, scanArea.top + cornerLength),

@@ -10,6 +10,7 @@ Requires-Dist: python-multipart>=0.0.9
 Requires-Dist: sympy>=1.13.0
 Requires-Dist: uvicorn[standard]>=0.30.0
 Requires-Dist: Pillow>=10.4.0
+Requires-Dist: surya-ocr @ git+https://github.com/datalab-to/surya.git
 Provides-Extra: transformers
 Requires-Dist: accelerate>=0.34.0; extra == "transformers"
 Requires-Dist: torch>=2.4.0; extra == "transformers"
@@ -28,18 +29,17 @@ Local FastAPI backend for MathWizard. The intended flow is:
 
 ## Status
 
-This repo now contains the server scaffold and orchestration loop. You still need to accept the Gemma license on Hugging Face, point it at a local Gemma 4-capable model checkpoint, and install Python dependencies.
+This repo now contains the server scaffold and orchestration loop. The recommended runtime is Ollama with `gemma4:e2b`. The older Hugging Face `transformers` backend remains available as a fallback.
 
 ## Quick start
 
 ```bash
 cd mathwizard_server
-python -m venv .venv
-.venv\Scripts\activate
-pip install -e .[transformers]
-set MW_BACKEND=transformers
-set MW_GEMMA_MODEL_ID=google/gemma-4-E2B-it
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+ollama pull gemma4:e2b
+python3 -m pip install -e .[transformers]
+set MW_BACKEND=ollama
+set MW_GEMMA_MODEL_ID=gemma4:e2b
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 If you want to bring the server up before wiring a real model, leave `MW_BACKEND` unset. That uses a stub backend:
@@ -50,17 +50,19 @@ If you want to bring the server up before wiring a real model, leave `MW_BACKEND
 
 ## Environment variables
 
-- `MW_BACKEND`: `stub` or `transformers`
+- `MW_BACKEND`: `ollama`, `transformers`, or `stub`
 - `MW_GEMMA_MODEL_ID`: model identifier or local path
-  - `google/gemma-4-E2B-it` if you want the ~3.2 GB Q4 class
+  - `gemma4:e2b` for the recommended Ollama path
+  - `google/gemma-4-E2B-it` if you explicitly want the slower Transformers path
   - `google/gemma-4-E4B-it` if you can afford roughly ~5 GB Q4 and want better math/vision quality
+- `MW_OLLAMA_BASE_URL`: defaults to `http://127.0.0.1:11434`
 - `MW_GEMMA_DEVICE`: `cuda`, `cpu`, or `auto`
 - `MW_GEMMA_DTYPE`: `auto`, `bfloat16`, `float16`, `float32`
 - `MW_REQUEST_TIMEOUT_SECONDS`: request timeout budget for orchestration
 
 ## E2B guidance
 
-If you are using `google/gemma-4-E2B-it`, keep the orchestration strict:
+If you are using `gemma4:e2b` or `google/gemma-4-E2B-it`, keep the orchestration strict:
 
 - use narrow JSON schemas
 - keep tool names closed and typed
@@ -69,6 +71,26 @@ If you are using `google/gemma-4-E2B-it`, keep the orchestration strict:
 - keep prompts explicit about "JSON only"
 
 The current scaffold is tuned for that smaller-model behavior and includes a single repair pass when the model returns malformed JSON.
+
+## Windows note
+
+On this machine, `python` and `python3` are different installs. Use the interpreter that has CUDA-enabled PyTorch:
+
+```powershell
+python3 -c "import torch; print(torch.__version__, torch.cuda.is_available(), torch.version.cuda)"
+```
+
+The included `run_server.ps1` uses `python3` directly for that reason.
+
+## Recommended runtime
+
+For local inference on this machine, prefer Ollama:
+
+- install/start Ollama
+- `ollama pull gemma4:e2b`
+- run the FastAPI server with `MW_BACKEND=ollama`
+
+This keeps Gemma on a GGUF/Ollama serving path instead of the slower direct `transformers` path.
 
 ## Endpoints
 

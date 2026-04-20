@@ -16,6 +16,7 @@ class SuryaOcrClient:
         if self._predictor is not None:
             return
         try:
+            from surya.common.surya.decoder.config import SuryaDecoderConfig
             from surya.recognition import RecognitionPredictor
             from surya.detection import DetectionPredictor
             from surya.foundation import FoundationPredictor
@@ -27,6 +28,7 @@ class SuryaOcrClient:
                 "  python3 -m pip install torchvision --index-url https://download.pytorch.org/whl/cpu"
             ) from exc
 
+        _patch_surya_compatibility(SuryaDecoderConfig)
         foundation = FoundationPredictor(
             checkpoint=surya_settings.RECOGNITION_MODEL_CHECKPOINT
         )
@@ -69,6 +71,26 @@ def _preprocess(image_bytes: bytes) -> Image.Image:
             Image.Resampling.LANCZOS,
         )
     return img
+
+
+def _patch_surya_compatibility(config_cls: type) -> None:
+    if not hasattr(config_cls, "pad_token_id"):
+        # Surya 0.17.1 can load checkpoints whose nested decoder config omits
+        # this field, while its decoder model reads it during construction.
+        # The parent SuryaModelConfig default is 2.
+        config_cls.pad_token_id = 2
+
+    try:
+        from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS
+    except ImportError:
+        return
+
+    if "default" not in ROPE_INIT_FUNCTIONS and "proportional" in ROPE_INIT_FUNCTIONS:
+        # Surya's Qwen2RotaryEmbedding asks Transformers for the legacy
+        # "default" RoPE initializer. Transformers 5 no longer exposes it, and
+        # "proportional" is the unscaled initializer for configs without
+        # rope_scaling.
+        ROPE_INIT_FUNCTIONS["default"] = ROPE_INIT_FUNCTIONS["proportional"]
 
 
 def create_ocr_client() -> SuryaOcrClient:

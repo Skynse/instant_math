@@ -17,7 +17,8 @@ class ScanScreen extends ConsumerStatefulWidget {
   ConsumerState<ScanScreen> createState() => _ScanScreenState();
 }
 
-class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObserver {
+class _ScanScreenState extends ConsumerState<ScanScreen>
+    with WidgetsBindingObserver {
   final CameraService _cameraService = CameraService();
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -44,7 +45,9 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = _cameraService.controller;
-    if (cameraController == null || !cameraController.value.isInitialized) return;
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
 
     if (state == AppLifecycleState.inactive) {
       cameraController.dispose();
@@ -66,12 +69,18 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
 
   Future<void> _takePicture() async {
     if (_isProcessing) return;
+    final viewportSize = MediaQuery.sizeOf(context);
+    final scanRect = ScanFrameGeometry.rectFor(viewportSize);
+
     setState(() {
       _isProcessing = true;
       _detectionStatus = 'Capturing image...';
     });
     try {
-      final imageBytes = await _cameraService.takePicture();
+      final imageBytes = await _cameraService.takePicture(
+        viewportSize: viewportSize,
+        scanRect: scanRect,
+      );
       if (imageBytes != null) {
         await _processImage(imageBytes);
       } else {
@@ -95,7 +104,9 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
       _detectionStatus = 'Loading image...';
     });
     try {
-      final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+      );
       if (image != null) {
         final bytes = await image.readAsBytes();
         await _processImage(bytes);
@@ -169,8 +180,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                 minLines: 1,
               ),
               const SizedBox(height: 16),
-              const Text('What do you want to do?',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const Text(
+                'What do you want to do?',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -180,14 +193,18 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                   return ChoiceChip(
                     label: Text(m.$2, style: const TextStyle(fontSize: 12)),
                     selected: isSelected,
-                    onSelected: (_) => setDialogState(() => selectedMode = m.$1),
+                    onSelected: (_) =>
+                        setDialogState(() => selectedMode = m.$1),
                   );
                 }).toList(),
               ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
             FilledButton(
               onPressed: () {
                 final text = controller.text.trim();
@@ -212,7 +229,11 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
     });
     try {
       final aiService = ref.read(aiServiceProvider);
-      final result = await aiService.generateSolution(text, 'Mathematics', mode: mode);
+      final result = await aiService.generateSolution(
+        text,
+        'Mathematics',
+        mode: mode,
+      );
       setState(() {
         _isProcessing = false;
         _detectedProblem = result;
@@ -250,7 +271,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SolutionScreen(problem: problem, solution: solution),
+        builder: (context) =>
+            SolutionScreen(problem: problem, solution: solution),
       ),
     );
   }
@@ -259,8 +281,12 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
     final l = latex.toLowerCase();
     if (l.contains(r'\int') || l.contains('dx')) return 'Calculus';
     if (l.contains(r'\lim')) return 'Limits';
-    if (l.contains(r'\sin') || l.contains(r'\cos') || l.contains(r'\tan')) return 'Trigonometry';
-    if (l.contains(';') || l.split('=').length > 2) return 'Systems of Equations';
+    if (l.contains(r'\sin') || l.contains(r'\cos') || l.contains(r'\tan')) {
+      return 'Trigonometry';
+    }
+    if (l.contains(';') || l.split('=').length > 2) {
+      return 'Systems of Equations';
+    }
     if (l.contains(r'\frac') || l.contains('=')) return 'Algebra';
     return 'General';
   }
@@ -272,7 +298,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
         children: [
           // Camera preview
           if (_isCameraInitialized && _cameraService.controller != null)
-            CameraPreview(_cameraService.controller!)
+            _buildCameraPreview(_cameraService.controller!)
           else
             Container(
               color: Colors.black,
@@ -282,7 +308,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                   children: [
                     Icon(Icons.camera_alt, size: 64, color: Colors.white24),
                     SizedBox(height: 16),
-                    Text('Initializing camera...', style: TextStyle(color: Colors.white54)),
+                    Text(
+                      'Initializing camera...',
+                      style: TextStyle(color: Colors.white54),
+                    ),
                   ],
                 ),
               ),
@@ -295,7 +324,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
           if (!_isProcessing && !_showDetection)
             Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
@@ -321,8 +353,14 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
               children: [
                 // Status pill
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primaryDark.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(30),
@@ -336,16 +374,25 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.accentTeal),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.accentTeal,
+                            ),
                           ),
                         )
                       else
-                        const Icon(Icons.auto_fix_high, color: AppColors.accentTeal, size: 20),
+                        const Icon(
+                          Icons.auto_fix_high,
+                          color: AppColors.accentTeal,
+                          size: 20,
+                        ),
                       const SizedBox(width: 8),
                       Flexible(
                         child: Text(
                           _detectionStatus,
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],
@@ -354,12 +401,18 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
 
                 // Camera controls
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 24,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.8),
+                      ],
                     ),
                   ),
                   child: Row(
@@ -379,7 +432,9 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: _isProcessing ? Colors.grey : AppColors.primary,
+                              color: _isProcessing
+                                  ? Colors.grey
+                                  : AppColors.primary,
                               width: 4,
                             ),
                             color: AppColors.primary.withValues(alpha: 0.2),
@@ -390,10 +445,14 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                               height: 60,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: _isProcessing ? Colors.grey : AppColors.primary,
+                                color: _isProcessing
+                                    ? Colors.grey
+                                    : AppColors.primary,
                               ),
                               child: Icon(
-                                _isProcessing ? Icons.hourglass_top : Icons.camera_alt,
+                                _isProcessing
+                                    ? Icons.hourglass_top
+                                    : Icons.camera_alt,
                                 color: AppColors.primaryDark,
                                 size: 32,
                               ),
@@ -413,7 +472,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
                 // Detected pattern card
                 if (_showDetection && _detectedProblem != null)
                   DetectedPatternCard(
-                    patternName: _detectedProblem!['title'] ?? 'DETECTED PROBLEM',
+                    patternName:
+                        _detectedProblem!['title'] ?? 'DETECTED PROBLEM',
                     equation: _detectedProblem!['equation'] as String? ?? '',
                     onView: _navigateToSolution,
                   ),
@@ -421,6 +481,24 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with WidgetsBindingObse
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCameraPreview(CameraController controller) {
+    final previewSize = controller.value.previewSize;
+    if (previewSize == null) {
+      return CameraPreview(controller);
+    }
+
+    return SizedBox.expand(
+      child: FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: previewSize.height,
+          height: previewSize.width,
+          child: CameraPreview(controller),
+        ),
       ),
     );
   }

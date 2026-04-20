@@ -11,7 +11,7 @@ from sympy.parsing.sympy_parser import (
     standard_transformations,
 )
 
-from .latex_normalizer import normalize
+from .latex_normalizer import clean_display_latex, normalize
 from .ocr_client import SuryaOcrClient  # noqa: F401
 from .schemas import OcrResponse, SolvedResponse, SolutionStep
 
@@ -67,15 +67,17 @@ class SolveOrchestrator:
 
     def ocr_image(self, image_bytes: bytes) -> OcrResponse:
         text = self._ocr.extract_text(image_bytes)
-        return OcrResponse(latex=text, problem_text=text)
+        clean_text = clean_display_latex(text)
+        return OcrResponse(latex=clean_text, problem_text=clean_text)
 
     def solve_from_image(self, image_bytes: bytes) -> SolvedResponse:
         raw = self._ocr.extract_text(image_bytes)
         if not raw:
             return _error("Could not extract text from image", "ocr_failed")
-        return self.solve_from_text(raw)
+        return self.solve_from_text(clean_display_latex(raw))
 
     def solve_from_text(self, text: str, mode: str = "auto") -> SolvedResponse:
+        text = clean_display_latex(text)
         try:
             return _dispatch(text, mode=mode)
         except Exception as exc:

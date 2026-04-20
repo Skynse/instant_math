@@ -13,7 +13,9 @@ class ServerConfig {
 
   static String get baseUrl => _baseUrl;
 
-  static const Duration timeout = Duration(seconds: 30);
+  static const Duration healthTimeout = Duration(seconds: 5);
+  static const Duration solveTimeout = Duration(minutes: 2);
+  static const Duration imageTimeout = Duration(minutes: 5);
 
   /// Load persisted URL from SharedPreferences.
   static Future<void> load() async {
@@ -44,7 +46,7 @@ class ServerService {
     try {
       final res = await _client
           .get(Uri.parse('$_base/health'))
-          .timeout(const Duration(seconds: 5));
+          .timeout(ServerConfig.healthTimeout);
       return res.statusCode == 200;
     } catch (_) {
       return false;
@@ -64,8 +66,10 @@ class ServerService {
         ),
       );
 
-    final streamed = await req.send().timeout(ServerConfig.timeout);
-    final res = await http.Response.fromStream(streamed);
+    final streamed = await req.send().timeout(ServerConfig.imageTimeout);
+    final res = await http.Response.fromStream(
+      streamed,
+    ).timeout(ServerConfig.imageTimeout);
 
     if (res.statusCode != 200) {
       throw Exception('OCR failed (${res.statusCode}): ${res.body}');
@@ -85,7 +89,7 @@ class ServerService {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'latex': latex, 'mode': mode}),
         )
-        .timeout(ServerConfig.timeout);
+        .timeout(ServerConfig.solveTimeout);
 
     if (res.statusCode != 200) {
       throw Exception('Solve failed (${res.statusCode}): ${res.body}');
@@ -106,8 +110,10 @@ class ServerService {
         ),
       );
 
-    final streamed = await req.send().timeout(ServerConfig.timeout);
-    final res = await http.Response.fromStream(streamed);
+    final streamed = await req.send().timeout(ServerConfig.imageTimeout);
+    final res = await http.Response.fromStream(
+      streamed,
+    ).timeout(ServerConfig.imageTimeout);
 
     if (res.statusCode != 200) {
       throw Exception('OCR+Solve failed (${res.statusCode}): ${res.body}');

@@ -43,3 +43,37 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Python/server local environment and generated metadata
+**/.venv/
+**/venv/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local AI/model caches and large downloaded runtime artifacts
+.cache/
+**/.cache/
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+*.tflite
+*.gguf
+
+# Local archives and generated media dumps
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# Local Codex/session scratch files
+.codex
